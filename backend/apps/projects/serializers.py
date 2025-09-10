@@ -35,6 +35,16 @@ class ProjectUpdateSerializer(serializers.ModelSerializer):
         fields = ('id', 'project', 'notes', 'image', 'created_at')
         read_only_fields = ('project', 'created_at')
 
+    def validate_image(self, value):
+        # Ensure uploaded file is an image and under 5 MB
+        max_mb = 5
+        if hasattr(value, 'content_type') and not str(value.content_type).startswith('image/'):
+            raise serializers.ValidationError('Only image uploads are allowed')
+        size = getattr(value, 'size', None)
+        if size is not None and size > max_mb * 1024 * 1024:
+            raise serializers.ValidationError(f'Image must be <= {max_mb} MB')
+        return value
+
 
 class AdminProjectStatusSerializer(serializers.ModelSerializer):
     class Meta:

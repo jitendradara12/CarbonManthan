@@ -3,8 +3,10 @@ from .views import (
     NGOProjectListCreateView,
     NGOProjectDetailView,
     NGOProjectUpdateCreateView,
+    NGOProjectUpdateListView,
     AdminProjectListView,
-    AdminProjectStatusUpdateView,
+    AdminProjectRetrieveUpdateView,
+    AdminProjectUpdateListView,
 )
 
 
@@ -13,8 +15,10 @@ urlpatterns = [
     path('projects/', NGOProjectListCreateView.as_view(), name='ngo-project-list-create'),
     path('projects/<int:pk>/', NGOProjectDetailView.as_view(), name='ngo-project-detail'),
     path('projects/<int:pk>/updates/', NGOProjectUpdateCreateView.as_view(), name='ngo-project-update-create'),
+    path('projects/<int:pk>/updates/list/', NGOProjectUpdateListView.as_view(), name='ngo-project-update-list'),
 
     # Admin
     path('admin/projects/', AdminProjectListView.as_view(), name='admin-project-list'),
-    path('admin/projects/<int:pk>/', AdminProjectStatusUpdateView.as_view(), name='admin-project-status-update'),
+    path('admin/projects/<int:pk>/', AdminProjectRetrieveUpdateView.as_view(), name='admin-project-detail'),
+    path('admin/projects/<int:pk>/updates/', AdminProjectUpdateListView.as_view(), name='admin-project-update-list'),
 ]

@@ -54,6 +54,38 @@ class TestProjectFlow(TestCase):
 		resp = self.client.post(reverse('ngo-project-update-create', args=[project_id]), {'notes': 'Week 1', 'image': image})
 		self.assertEqual(resp.status_code, 201)
 
+	def test_ngo_project_validations_and_updates_list(self):
+		# invalid lat
+		resp = self.client.post(
+			reverse('ngo-project-list-create'),
+			{
+				'name': 'BadLat',
+				'description': 'x',
+				'location_lat': '200',
+				'location_lon': '0',
+				'area_hectares': '1',
+			},
+			format='json',
+		)
+		self.assertEqual(resp.status_code, 400)
+
+		# create valid then list updates
+		resp = self.client.post(
+			reverse('ngo-project-list-create'),
+			{
+				'name': 'Good',
+				'description': 'ok',
+				'location_lat': '22',
+				'location_lon': '88',
+				'area_hectares': '2',
+			},
+			format='json',
+		)
+		project_id = resp.data['id']
+		resp = self.client.get(reverse('ngo-project-update-list', args=[project_id]))
+		self.assertEqual(resp.status_code, 200)
+		self.assertEqual(resp.data['count'], 0)
+
 
 class TestAdminApproval(TestCase):
 	def setUp(self):
@@ -76,9 +108,17 @@ class TestAdminApproval(TestCase):
 		self.assertEqual(resp.status_code, 200)
 		self.assertEqual(resp.data['results'][0]['name'], 'Coastal')
 
-		resp = self.client.patch(reverse('admin-project-status-update', args=[self.project.id]), {'status': 'Approved'}, format='json')
+		resp = self.client.patch(reverse('admin-project-detail', args=[self.project.id]), {'status': 'Approved'}, format='json')
 		self.assertEqual(resp.status_code, 200)
 		self.project.refresh_from_db()
 		self.assertEqual(self.project.status, 'Approved')
+
+	def test_admin_get_detail_and_list_updates(self):
+		# detail
+		resp = self.client.get(reverse('admin-project-detail', args=[self.project.id]))
+		self.assertEqual(resp.status_code, 200)
+		# updates list
+		resp = self.client.get(reverse('admin-project-update-list', args=[self.project.id]))
+		self.assertEqual(resp.status_code, 200)
 
 # Create your tests here.

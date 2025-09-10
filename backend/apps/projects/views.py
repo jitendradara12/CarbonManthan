@@ -37,15 +37,37 @@ class NGOProjectUpdateCreateView(generics.CreateAPIView):
 		serializer.save(project=project)
 
 
+class NGOProjectUpdateListView(generics.ListAPIView):
+	serializer_class = ProjectUpdateSerializer
+	permission_classes = [IsNGO]
+
+	def get_queryset(self):
+		project = get_object_or_404(Project, pk=self.kwargs['pk'], owner=self.request.user)
+		return ProjectUpdate.objects.filter(project=project).order_by('-created_at')
+
+
 class AdminProjectListView(generics.ListAPIView):
 	serializer_class = ProjectSerializer
 	permission_classes = [IsAdmin]
 	queryset = Project.objects.all().order_by('-created_at')
 
 
-class AdminProjectStatusUpdateView(generics.UpdateAPIView):
-	serializer_class = AdminProjectStatusSerializer
+class AdminProjectRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 	permission_classes = [IsAdmin]
 	queryset = Project.objects.all()
-	http_method_names = ['patch']
+	http_method_names = ['get', 'patch']
+
+	def get_serializer_class(self):
+		if self.request.method.lower() == 'patch':
+			return AdminProjectStatusSerializer
+		return ProjectSerializer
+
+
+class AdminProjectUpdateListView(generics.ListAPIView):
+	serializer_class = ProjectUpdateSerializer
+	permission_classes = [IsAdmin]
+
+	def get_queryset(self):
+		project = get_object_or_404(Project, pk=self.kwargs['pk'])
+		return ProjectUpdate.objects.filter(project=project).order_by('-created_at')
 
