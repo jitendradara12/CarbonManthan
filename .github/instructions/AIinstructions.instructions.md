@@ -160,41 +160,7 @@ class ProjectUpdate(models.Model):
 
 ## 3. Actionable Tasks & Execution Plan
 
-### Step 1: Project Setup (Team Lead)
-
-- Navigate to the `backend/` directory.
-- Create a Django project: `django-admin startproject server .`
-- Create an accounts app for the custom user model: `python manage.py startapp accounts apps/accounts`.
-- Create a projects app for the project models: `python manage.py startapp projects apps/projects`.
-- Add the new apps (`apps.accounts`, `apps.projects`) and `rest_framework` to `INSTALLED_APPS` in `server/settings.py`.
-- Configure `AUTH_USER_MODEL = 'accounts.User'` in `server/settings.py`.
-
-### Step 2: Implement Models & Admin (Backend Dev)
-
-- Implement the `User`, `Project`, and `ProjectUpdate` models as defined above.
-- Run `python manage.py makemigrations` and `python manage.py migrate`.
-- Register the models in `projects/admin.py` so they are accessible in the Django admin panel for easy testing.
-
-### Step 3: Build APIs (Backend Dev)
-
-Using Django REST Framework, create the following API endpoints:
-
-- Authentication:
-  - `POST /api/auth/register/` - Public endpoint for user registration.
-  - `POST /api/auth/login/` - Public endpoint for user login, returns an auth token.
-
-- Projects (NGO Role):
-  - `POST /api/projects/` - Create a new project. (Requires NGO authentication).
-  - `GET /api/projects/` - List all projects owned by the logged-in NGO.
-  - `GET /api/projects/{id}/` - View details of a specific project.
-
-- Project Updates (NGO Role):
-  - `POST /api/projects/{id}/updates/` - Add an update (with image) to a project.
-
-- Admin Dashboard (Admin Role):
-  - `GET /api/admin/projects/` - List ALL projects from ALL NGOs. (Requires Admin authentication).
-  - `PATCH /api/admin/projects/{id}/` - Update a project's status (e.g., set status to "Approved").
-
+### Step 1,2,3 done. 
 ### Step 4: Build Frontend Views (Frontend Dev)
 
 - Login/Register Page: A simple form for users to sign up and log in.
