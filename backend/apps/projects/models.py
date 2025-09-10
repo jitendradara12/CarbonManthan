@@ -22,6 +22,15 @@ class Project(models.Model):
 	def __str__(self):
 		return self.name
 
+	class Meta:
+		indexes = [
+			models.Index(fields=["owner", "status"]),
+			models.Index(fields=["-created_at"]),
+		]
+		constraints = [
+			models.UniqueConstraint(fields=["owner", "name"], name="unique_owner_project_name")
+		]
+
 
 class ProjectUpdate(models.Model):
 	project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="updates")
