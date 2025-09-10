@@ -41,3 +41,4 @@
 │        ├─ urls.py                  [MANUAL]
 │        └─ migrations/              [DJANGO-GENERATED]
 │           └─ __init__.py           [DJANGO-GENERATED]
+_
