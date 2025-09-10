@@ -22,6 +22,25 @@ Changelog (AI updates):
   - Ran `makemigrations` and `migrate` successfully.
   - Next: Build DRF APIs for auth, projects, and updates.
 
+- [2025-09-10] Step 3 APIs and config implemented:
+  - Added dependencies: Pillow, Simple JWT, and django-cors-headers in `requirements.txt` and installed them.
+  - Configured `REST_FRAMEWORK` with JWT auth, default permissions, pagination; added CORS middleware; wired environs for `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`.
+  - Accounts: `RegisterView` and URLs for `/api/auth/register/`, JWT token and refresh endpoints.
+  - Projects (NGO):
+    - `POST /api/projects/` create project (NGO only)
+    - `GET /api/projects/` list own projects (NGO only)
+    - `GET /api/projects/{id}/` retrieve own project (NGO only)
+    - `POST /api/projects/{id}/updates/` create update with image (multipart, NGO only)
+  - Admin:
+    - `GET /api/admin/projects/` list all projects
+    - `PATCH /api/admin/projects/{id}/` update status only
+  - Added validations: lat/lon ranges, positive area; added DB indexes and unique constraint `(owner, name)`.
+
+- [2025-09-10] Docs and setup polish:
+  - Added `backend/.env.example` for env configuration.
+  - Created `README.md` with setup and curl examples.
+  - Created default superuser `admin` (admin@example.com) for testing.
+
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 
 Objective for this Phase: Build a functional web application that manages users, projects, and data uploads. This is the "off-chain" foundation before we integrate any blockchain components.

@@ -1,3 +1,9 @@
 django
 djangorestframework
 environs
+pillow
+djangorestframework-simplejwt
+django-cors-headers
+pytest
+pytest-django
+pytest-cov
