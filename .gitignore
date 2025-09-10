@@ -10,8 +10,6 @@
 *.log.*
 *.sig
 
-*.instructions.md
-*.instructions.*
 
 pkg/
 src/
