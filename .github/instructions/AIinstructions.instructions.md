@@ -15,6 +15,12 @@ Changelog (AI updates):
   - Fixed app configs to use `apps.accounts` and `apps.projects`.
   - Added `backend/apps/__init__.py` to register the package.
   - Next: create `projects` models, register admin, and run migrations.
+\n+- [2025-09-10] Step 2 models and admin complete:
+  - Implemented `Project` and `ProjectUpdate` models in `backend/apps/projects/models.py`.
+  - Registered models in `backend/apps/projects/admin.py` and custom `User` in `backend/apps/accounts/admin.py`.
+  - Added `MEDIA_URL` and `MEDIA_ROOT` in settings and wired media URLs in `server/urls.py`.
+  - Ran `makemigrations` and `migrate` successfully.
+  - Next: Build DRF APIs for auth, projects, and updates.
 
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 
