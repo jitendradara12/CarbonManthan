@@ -41,6 +41,16 @@ Changelog (AI updates):
   - Created `README.md` with setup and curl examples.
   - Created default superuser `admin` (admin@example.com) for testing.
 
+- [2025-09-10] Step 4 minimal frontend wired:
+  - Added simple static frontend under `frontend/` (index.html, styles.css, app.js).
+  - Hosted via Django dev server at `/` -> `/frontend/index.html`.
+  - Views:
+    - Login and Register
+    - NGO dashboard (list/create projects), project detail with upload & updates list
+    - Admin dashboard (list, detail, approve/reject, updates list)
+  - Added `/api/auth/me/` endpoint for role-aware UI.
+  - Added missing read endpoints: NGO `GET /api/projects/{id}/updates/list/`; Admin `GET /api/admin/projects/{id}/` and `/api/admin/projects/{id}/updates/`.
+
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 
 Objective for this Phase: Build a functional web application that manages users, projects, and data uploads. This is the "off-chain" foundation before we integrate any blockchain components.
