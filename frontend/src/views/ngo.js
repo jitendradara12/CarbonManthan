@@ -31,8 +31,15 @@ export const NGOListView = (projects) => h(`
         <form id="projForm">
           <label>Name<input name="name" required /></label>
           <label>Description<textarea name="description" required></textarea></label>
-          <label>Latitude<input name="location_lat" type="number" step="0.000001" required /></label>
-          <label>Longitude<input name="location_lon" type="number" step="0.000001" required /></label>
+          <div>
+            <label>Pick Location</label>
+            <div id="map-picker" class="map-embed"></div>
+            <div class="row" style="gap:.5rem;margin-top:.5rem;">
+              <div class="col"><label>Latitude<input name="location_lat" type="number" step="0.000001" required /></label></div>
+              <div class="col"><label>Longitude<input name="location_lon" type="number" step="0.000001" required /></label></div>
+            </div>
+            <small class="muted">Tip: Click on the map to set coordinates. You can fine-tune numbers if needed.</small>
+          </div>
           <label>Area (hectares)<input name="area_hectares" type="number" step="0.01" required /></label>
           <button>${Icon('create')} Create</button>
         </form>
@@ -47,7 +54,12 @@ export const ProjectDetailView = (project, updates) => h(`
     <p>${project.description}</p>
     <div><b>Status:</b> <span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></div>
     <div><b>Area:</b> ${project.area_hectares} ha</div>
-    <div><b>Location:</b> ${project.location_lat}, ${project.location_lon}</div>
+    <div class="row" style="gap:1rem;align-items:flex-start;">
+      <div class="col" style="flex:1;min-width:260px;"><div id="map-project" class="map-embed map-embed-lg"></div></div>
+      <div class="col" style="flex:1;min-width:220px;">
+        <div><b>Location:</b> ${project.location_lat}, ${project.location_lon}</div>
+      </div>
+    </div>
   </div>
   <div class="card">
     <h3>Submit Update</h3>

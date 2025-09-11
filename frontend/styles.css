@@ -270,6 +270,12 @@ button.secondary{background:var(--border);color:var(--text)}
   border: 1px solid var(--border);
 }
 
+.muted { color: var(--muted); }
+
+/* Map containers */
+.map-embed { height: 280px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+.map-embed-lg { height: 360px; }
+
 /* Theme Toggle */
 .theme-toggle {
   background: none;
