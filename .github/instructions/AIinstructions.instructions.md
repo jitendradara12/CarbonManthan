@@ -1,9 +1,5 @@
-# Frontend Mission: The Face of Blue Carbon Restoration
-
-Welcome, developer. You're not just building a user interface; you're creating the digital window into India's fight against climate change. This application will empower coastal communities, NGOs, and researchers by making their vital blue carbon restoration work visible, verifiable, and impactful.
-
-Every component you build, every user interaction you design, brings us one step closer to a transparent and effective system for healing our planet. Let's build something that matters.
-
+---
+applyTo: '**'
 ---
 #keep suggesting the next step after every prompt response
 ## 🎯 Our Objective: Empowering Users Through Design
@@ -15,113 +11,127 @@ Your mission is to create a clean, intuitive, and responsive frontend experience
 * **Neha, the NGO Manager:** Her journey begins with registering her community's new mangrove plantation project. She'll use the dashboard you build to proudly upload photos and notes, tracking her project's progress from "Pending" to "Approved." Her work will finally have the visibility it deserves.
 
 * **Dr. Sharma, the NCCR Verifier:** He needs an efficient and clear dashboard to review the incredible work being done by NGOs across the country. Your interface will give him a bird's-eye view of all projects, allowing him to easily access details and confidently approve their status, ensuring the integrity of the entire system.
+=======
+
+---
+# Phase 1: Core Off-Chain Application Instructions
+for AI: keep track of the current state of the repository. and update this file accodingly as you do the work.
+
+
+
+Changelog (AI updates):
+
+- [2025-09-10] Step 1 setup started and wiring done:
+  - Added DRF and local apps to INSTALLED_APPS in `backend/server/settings.py`.
+  - Set `AUTH_USER_MODEL = 'accounts.User'`.
+  - Created custom `User` model with role field in `backend/apps/accounts/models.py`.
+  - Fixed app configs to use `apps.accounts` and `apps.projects`.
+  - Added `backend/apps/__init__.py` to register the package.
+  - Next: create `projects` models, register admin, and run migrations.
+\n+- [2025-09-10] Step 2 models and admin complete:
+  - Implemented `Project` and `ProjectUpdate` models in `backend/apps/projects/models.py`.
+  - Registered models in `backend/apps/projects/admin.py` and custom `User` in `backend/apps/accounts/admin.py`.
+  - Added `MEDIA_URL` and `MEDIA_ROOT` in settings and wired media URLs in `server/urls.py`.
+  - Ran `makemigrations` and `migrate` successfully.
+  - Next: Build DRF APIs for auth, projects, and updates.
+
+- [2025-09-10] Step 3 APIs and config implemented:
+  - Added dependencies: Pillow, Simple JWT, and django-cors-headers in `requirements.txt` and installed them.
+  - Configured `REST_FRAMEWORK` with JWT auth, default permissions, pagination; added CORS middleware; wired environs for `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`.
+  - Accounts: `RegisterView` and URLs for `/api/auth/register/`, JWT token and refresh endpoints.
+  - Projects (NGO):
+    - `POST /api/projects/` create project (NGO only)
+    - `GET /api/projects/` list own projects (NGO only)
+    - `GET /api/projects/{id}/` retrieve own project (NGO only)
+    - `POST /api/projects/{id}/updates/` create update with image (multipart, NGO only)
+  - Admin:
+    - `GET /api/admin/projects/` list all projects
+    - `PATCH /api/admin/projects/{id}/` update status only
+  - Added validations: lat/lon ranges, positive area; added DB indexes and unique constraint `(owner, name)`.
+
+- [2025-09-10] Docs and setup polish:
+  - Added `backend/.env.example` for env configuration.
+  - Created `README.md` with setup and curl examples.
+  - Created default superuser `admin` (admin@example.com) for testing.
+
+- [2025-09-10] Step 4 minimal frontend wired:
+  - Added simple static frontend under `frontend/` (index.html, styles.css, app.js).
+  - Hosted via Django dev server at `/` -> `/frontend/index.html`.
+  - Views:
+    - Login and Register
+    - NGO dashboard (list/create projects), project detail with upload & updates list
+    - Admin dashboard (list, detail, approve/reject, updates list)
+  - Added `/api/auth/me/` endpoint for role-aware UI.
+  - Added missing read endpoints: NGO `GET /api/projects/{id}/updates/list/`; Admin `GET /api/admin/projects/{id}/` and `/api/admin/projects/{id}/updates/`.
+
+## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
+
+Objective for this Phase: Build a functional web application that manages users, projects, and data uploads. This is the "off-chain" foundation before we integrate any blockchain components.
 
 ---
 
-## 📋 Key Views to Build
+## 1. Do What? (The Mission)
 
-This is the core feature set for the frontend. The backend is ready and waiting for this interface to bring it to life.
+The goal of Phase 1 is to build the central hub for our system. By the end of this phase, we will have a working Django application where different types of users can register, log in, and perform their core functions.
 
-- **Authentication Pages:**
-  - A welcoming **Login** form.
-  - A simple **Registration** form where users can select their role (NGO, Admin, etc.).
+### Core Features to Implement
 
-- **NGO Dashboard:**
-  - A main view displaying a **list of the NGO's projects** (perhaps as cards).
-  - A clear button to **"Create New Project"** that opens a form.
-  - A **Project Detail Page** that shows all project info and lists its progress updates.
-  - An easy-to-use **form for submitting a new update** with notes and an image.
+- Multi-Role User Authentication:
+  - Users can register as one of three types: NGO/Community, NCCR Admin, or Corporate/Buyer.
+  - Users can log in and log out.
+  - Access to different features will be restricted based on user role.
 
-- **Admin Dashboard:**
-  - An efficient **table view of all projects** from all NGOs.
-  - Each row in the table should have buttons to **"Approve"** or **"Reject"** a project.
-  - A **Project Detail Page** to review all information before making a verification decision.
+- Project Lifecycle Management:
+  - An authenticated NGO/Community user can create a new blue carbon restoration project (e.g., "Sunderbans Mangrove Plantation Drive").
+  - They can view their created projects and upload data/updates to them (e.g., photos, text reports).
+  - An NCCR Admin user can view a list of all submitted projects.
+  - The admin can review a project's details and its updates.
+  - The admin has buttons to "Approve" or "Reject" a project. (Note: In this phase, this button will only change the project's status in our database. The blockchain logic comes later.)
 
----
+### Visual Workflow
 
-## 🔌 Connecting to the Backend API
-
-The backend is fully operational. Here are the key endpoints you'll need to connect the UI to. Remember to handle the JWT token for authenticated requests.
-
-| Method | Endpoint | Purpose |
-| :--- | :--- | :--- |
-| `POST` | `/api/auth/register/` | Create a new user account. |
-| `POST` | `/api/auth/login/` | Log in and receive an auth token. |
-| `GET` | `/api/auth/me/` | Get the logged-in user's role to display the correct dashboard. |
-| `GET`, `POST` | `/api/projects/` | **(NGO)** List own projects or create a new one. |
-| `POST` | `/api/projects/{id}/updates/` | **(NGO)** Add a progress update with an image to a specific project. |
-| `GET` | `/api/admin/projects/` | **(Admin)** List all projects in the system for review. |
-| `PATCH` | `/api/admin/projects/{id}/` | **(Admin)** Update a project's status to "Approved" or "Rejected". |
+This diagram shows the basic interaction: NGOs create projects, admins review them, and all the data is stored in our database.
 
 ---
 
-## 🚀 The Next Step
+## 2. Technologies & Context (For Developers & AI Agents)
 
-Once this beautiful and functional interface is complete, it will become the foundation for Phase 2: integrating a revolutionary blockchain system to tokenize these verified carbon credits. What you build today is the crucial first step toward that future.
+This section provides the necessary context for any developer or AI agent to understand the project's architecture and make informed implementation decisions.
 
----
+### 2.1. Technology Stack
 
-## ✅ Implementation Log (AI Assist)
+- Backend Framework: Python 3.10+ with Django 4.x
+- API Framework: Django REST Framework (DRF) for building RESTful APIs.
+- Database: SQLite (default for Django, sufficient for hackathon).
+- Authentication: Django's built-in User model, extended for roles. Token-based authentication (e.g., DRF's TokenAuthentication or Simple JWT).
+- File Handling: Django's FileField or ImageField for uploads.
 
-Tracking incremental frontend build steps.
+### 2.2. Project Context
 
-### 2025-09-11 Phase 1 Modularization
-Initial single-file prototype (`frontend/app.js`) refactored into a lightweight modular structure to enable iterative enhancement.
+- Problem Domain: We are creating a digital Monitoring, Reporting, and Verification (MRV) system for blue carbon projects. The system must be trustworthy and transparent.
+- Phase 1 Scope: This phase is entirely "off-chain." We are building a standard CRUD (Create, Read, Update, Delete) application. No blockchain interaction is required yet. The focus is on building robust APIs and a clear data structure.
+- Repo Structure: All backend code should reside in the `backend/` directory. Create new Django apps inside the `backend/apps/` folder as needed (e.g., accounts, projects).
 
-Created structure under `frontend/src/`:
-- `api/client.js`: Centralized API wrapper with error handling & token persistence.
-- `state/auth.js`: Auth state management (hydrate, login, logout).
-- `components/ui.js`: Small UI helpers (templating + flash messaging).
-- `views/` (`auth.js`, `ngo.js`, `admin.js`): Route-level render functions separated by domain.
-- `router/index.js`: Hash-based router orchestrating view selection + event binding.
-- `main.js`: Entry module bootstrapping the app.
+## 3. Actionable Tasks & Execution Plan
 
-Updated `frontend/index.html` to load the ES module entrypoint (`/frontend/src/main.js`) instead of legacy `app.js` and annotated as modular Phase 1.
+### Step 1,2,3 done. 
+### Step 4: Build Frontend Views (Frontend Dev)
 
-Kept styling (`styles.css`) unchanged; will iterate later with accessibility improvements (focus styles, reduced motion, color contrast checks).
-
-### Feature Coverage vs Mission Spec
-- Authentication (login/register) forms: Implemented.
-- Role-based dashboard routing: Implemented (NGO vs Admin).
-- NGO project list + create form: Implemented.
-- NGO project detail + submit update (image+notes): Implemented.
-- Admin project list (all) + approve/reject actions: Implemented.
-- Admin project detail + updates: Implemented.
-- JWT persistence via localStorage: Implemented.
-- Error feedback: Basic flash messaging (needs refinement for per-field feedback later).
-
-### Planned Next Enhancements
-1. Loading states (skeleton or spinner) for API calls.
-2. Centralized error boundary + retry for transient failures (network 5xx).
-3. Form validation UX (disable submit while pending, minimal inline errors).
-4. Accessibility: ARIA roles for flash region + keyboard focus management post-navigation.
-5. Empty states (e.g., no projects yet) with call-to-action.
-6. Pagination support if backend adds it (currently expecting `results` wrapper).
-7. Image preview before upload; size/type guard.
-8. Basic theming (dark mode toggle) - optional stretch.
-
-### Assumptions Noted
-- Backend endpoints follow documented paths already confirmed in Django `urls.py` files.
-- Project list returns either `{ results: [...] }` or raw array; code handles both.
-- Auth token path uses SimpleJWT `/auth/token/` returning `{ access, refresh }` (refresh not yet used).
-
-### Technical Debt / TODO Markers
-- No service worker / offline strategy yet.
-- No bundler; pure ES modules acceptable for Phase 1 simplicity.
-- No unit tests for frontend logic yet (could add lightweight vitest setup if tooling introduced later).
+- Login/Register Page: A simple form for users to sign up and log in.
+- NGO Dashboard:
+  - Displays a list of the user's projects.
+  - A button to "Create New Project" which opens a form.
+  - Clicking a project goes to its detail page.
+- Project Detail Page:
+  - Shows project info (name, location, etc.).
+  - Lists all ProjectUpdates with their images and notes.
+  - Contains a form to submit a new update.
+- Admin Dashboard:
+  - Displays a table of all projects in the system with their current status.
+  - Each row should have "View", "Approve", and "Reject" buttons.
 
 ---
 
-End of log entry.
+## 4. Next Steps
 
-### 2025-09-11 Phase 1 Enhancements Batch 2
-Delivered features:
-- JWT refresh token support with automatic 401 retry (Single retry + graceful logout on refresh failure).
-- Dark mode toggle (persists in `localStorage`, respects system preference as baseline).
-- Skeleton loading components for list/detail views to reduce layout shift.
-- Theming variables extended for dark mode; focus outline preserved in dark context.
-- Per-request loading bar still active; skeletons now cover main view content.
-
-Deferred / still pending: service worker/offline, pagination, granular per-field validation (basic summary present), advanced error boundary, test harness.
-
-Next candidate batch: add pagination wiring (if backend supplies), introduce simple unit test setup for view helpers, and begin service worker scaffold for asset caching.
+Once Phase 1 is complete and functional, we will move to Phase 2, which involves designing the smart contract. This solid off-chain application will make the blockchain integration in later phases much smoother.
