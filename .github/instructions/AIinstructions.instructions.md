@@ -58,3 +58,58 @@ The backend is fully operational. Here are the key endpoints you'll need to conn
 ## 🚀 The Next Step
 
 Once this beautiful and functional interface is complete, it will become the foundation for Phase 2: integrating a revolutionary blockchain system to tokenize these verified carbon credits. What you build today is the crucial first step toward that future.
+
+---
+
+## ✅ Implementation Log (AI Assist)
+
+Tracking incremental frontend build steps.
+
+### 2025-09-11 Phase 1 Modularization
+Initial single-file prototype (`frontend/app.js`) refactored into a lightweight modular structure to enable iterative enhancement.
+
+Created structure under `frontend/src/`:
+- `api/client.js`: Centralized API wrapper with error handling & token persistence.
+- `state/auth.js`: Auth state management (hydrate, login, logout).
+- `components/ui.js`: Small UI helpers (templating + flash messaging).
+- `views/` (`auth.js`, `ngo.js`, `admin.js`): Route-level render functions separated by domain.
+- `router/index.js`: Hash-based router orchestrating view selection + event binding.
+- `main.js`: Entry module bootstrapping the app.
+
+Updated `frontend/index.html` to load the ES module entrypoint (`/frontend/src/main.js`) instead of legacy `app.js` and annotated as modular Phase 1.
+
+Kept styling (`styles.css`) unchanged; will iterate later with accessibility improvements (focus styles, reduced motion, color contrast checks).
+
+### Feature Coverage vs Mission Spec
+- Authentication (login/register) forms: Implemented.
+- Role-based dashboard routing: Implemented (NGO vs Admin).
+- NGO project list + create form: Implemented.
+- NGO project detail + submit update (image+notes): Implemented.
+- Admin project list (all) + approve/reject actions: Implemented.
+- Admin project detail + updates: Implemented.
+- JWT persistence via localStorage: Implemented.
+- Error feedback: Basic flash messaging (needs refinement for per-field feedback later).
+
+### Planned Next Enhancements
+1. Loading states (skeleton or spinner) for API calls.
+2. Centralized error boundary + retry for transient failures (network 5xx).
+3. Form validation UX (disable submit while pending, minimal inline errors).
+4. Accessibility: ARIA roles for flash region + keyboard focus management post-navigation.
+5. Empty states (e.g., no projects yet) with call-to-action.
+6. Pagination support if backend adds it (currently expecting `results` wrapper).
+7. Image preview before upload; size/type guard.
+8. Basic theming (dark mode toggle) - optional stretch.
+
+### Assumptions Noted
+- Backend endpoints follow documented paths already confirmed in Django `urls.py` files.
+- Project list returns either `{ results: [...] }` or raw array; code handles both.
+- Auth token path uses SimpleJWT `/auth/token/` returning `{ access, refresh }` (refresh not yet used).
+
+### Technical Debt / TODO Markers
+- No service worker / offline strategy yet.
+- No bundler; pure ES modules acceptable for Phase 1 simplicity.
+- No unit tests for frontend logic yet (could add lightweight vitest setup if tooling introduced later).
+
+---
+
+End of log entry.
