@@ -50,7 +50,12 @@ export const AdminDetailView = (project, updates) => h(`
     <div><b>Status:</b> <span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></div>
     <div><b>Owner ID:</b> ${project.owner}</div>
     <div><b>Area:</b> ${project.area_hectares} ha</div>
-    <div><b>Location:</b> ${project.location_lat}, ${project.location_lon}</div>
+    <div class="row" style="gap:1rem;align-items:flex-start;">
+      <div class="col" style="flex:1;min-width:260px;"><div id="map-project" class="map-embed map-embed-lg"></div></div>
+      <div class="col" style="flex:1;min-width:220px;">
+        <div><b>Location:</b> ${project.location_lat}, ${project.location_lon}</div>
+      </div>
+    </div>
     <div class="actions" style="margin-top: 1rem;">
       <button data-admin-approve="${project.id}" ${project.status !== 'Pending' ? 'disabled' : ''}>${Icon('approve')} Approve</button>
       <button data-admin-reject="${project.id}" ${project.status !== 'Pending' ? 'disabled' : ''}>${Icon('reject')} Reject</button>
