@@ -4,6 +4,8 @@ applyTo: '**'
 ##keep suggesting the next step after every prompt response
 ## 🎯 Our Objective: Empowering Users Through Design
 
+##the hackathon is near!!!, so focus on ui over ux because the judges will see the ui only
+
 Your mission is to create a clean, intuitive, and responsive frontend experience for the two primary users who will bring this registry to life. The interface should feel supportive and focused, allowing them to perform their crucial tasks without friction.
 
 ### The User Journeys
@@ -16,6 +18,62 @@ Your mission is to create a clean, intuitive, and responsive frontend experience
 ---
 # Phase 1: Core Off-Chain Application Instructions
 for AI: keep track of the current state of the repository. and update this file accodingly as you do the work.
+
+
+
+Changelog (AI updates):
+
+- [2025-09-10] Step 1 setup started and wiring done:
+  - Added DRF and local apps to INSTALLED_APPS in `backend/server/settings.py`.
+  - Set `AUTH_USER_MODEL = 'accounts.User'`.
+  - Created custom `User` model with role field in `backend/apps/accounts/models.py`.
+  - Fixed app configs to use `apps.accounts` and `apps.projects`.
+  - Added `backend/apps/__init__.py` to register the package.
+  - Next: create `projects` models, register admin, and run migrations.
+\n+- [2025-09-10] Step 2 models and admin complete:
+  - Implemented `Project` and `ProjectUpdate` models in `backend/apps/projects/models.py`.
+  - Registered models in `backend/apps/projects/admin.py` and custom `User` in `backend/apps/accounts/admin.py`.
+  - Added `MEDIA_URL` and `MEDIA_ROOT` in settings and wired media URLs in `server/urls.py`.
+  - Ran `makemigrations` and `migrate` successfully.
+  - Next: Build DRF APIs for auth, projects, and updates.
+
+- [2025-09-10] Step 3 APIs and config implemented:
+  - Added dependencies: Pillow, Simple JWT, and django-cors-headers in `requirements.txt` and installed them.
+  - Configured `REST_FRAMEWORK` with JWT auth, default permissions, pagination; added CORS middleware; wired environs for `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`.
+  - Accounts: `RegisterView` and URLs for `/api/auth/register/`, JWT token and refresh endpoints.
+  - Projects (NGO):
+    - `POST /api/projects/` create project (NGO only)
+    - `GET /api/projects/` list own projects (NGO only)
+    - `GET /api/projects/{id}/` retrieve own project (NGO only)
+    - `POST /api/projects/{id}/updates/` create update with image (multipart, NGO only)
+  - Admin:
+    - `GET /api/admin/projects/` list all projects
+    - `PATCH /api/admin/projects/{id}/` update status only
+  - Added validations: lat/lon ranges, positive area; added DB indexes and unique constraint `(owner, name)`.
+
+- [2025-09-10] Docs and setup polish:
+  - Added `backend/.env.example` for env configuration.
+  - Created `README.md` with setup and curl examples.
+  - Created default superuser `admin` (admin@example.com) for testing.
+
+- [2025-09-10] Step 4 minimal frontend wired:
+  - Added simple static frontend under `frontend/` (index.html, styles.css, app.js).
+  - Hosted via Django dev server at `/` -> `/frontend/index.html`.
+  - Views:
+    - Login and Register
+    - NGO dashboard (list/create projects), project detail with upload & updates list
+    - Admin dashboard (list, detail, approve/reject, updates list)
+  - Added `/api/auth/me/` endpoint for role-aware UI.
+  - Added missing read endpoints: NGO `GET /api/projects/{id}/updates/list/`; Admin `GET /api/admin/projects/{id}/` and `/api/admin/projects/{id}/updates/`.
+
+- [2025-09-12] Step 5 UI Polish Pass 1:
+  - Added professional-looking animations and hover effects in `styles.css`.
+  - Created a centralized `icons.js` component for SVG icons.
+  - Redesigned `auth.js` views with a cleaner, centered layout and integrated icons into buttons.
+  - Integrated icons into all buttons in `admin.js` and `ngo.js` views for a consistent look and feel.
+  - Added a fade-in animation to all view transitions in `router/index.js`.
+  - Next: Further UI refinements, potentially adding charts or more visual elements.
+
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 
 Objective for this Phase: Build a functional web application that manages users, projects, and data uploads. This is the "off-chain" foundation before we integrate any blockchain components.

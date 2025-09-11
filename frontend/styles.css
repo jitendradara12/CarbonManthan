@@ -29,13 +29,44 @@ body{background:var(--bg);color:var(--text); transition: background .2s, color .
 .topbar-rhs { display: flex; align-items: center; gap: 1rem; }
 .navlink{margin-left:1rem; color: var(--primary); text-decoration: none; font-weight: 500;}
 .navlink:hover { text-decoration: underline; }
-.card{background:var(--bg-offset);border:1px solid var(--border);border-radius:8px;padding:1rem;margin:1rem 0}
+.card{
+  background:var(--bg-offset);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:1rem;
+  margin:1rem 0;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.07), 0 1px 2px 0 rgba(0,0,0,0.05);
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
 .row{display:flex;gap:1rem;flex-wrap:wrap}
 .col{flex:1 1 280px}
 input,select,textarea{width:100%;padding:.6rem;border:1px solid var(--border);border-radius:8px; background: var(--bg); color: var(--text);}
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--focus-ring); }
 label{font-size:.9rem;color:var(--muted); display: block; margin-bottom: .75rem;}
-button{background:var(--primary);color:#fff;border:0;border-radius:6px;padding:.6rem .9rem;cursor:pointer}
+button{
+  background:var(--primary);
+  color:#fff;
+  border:0;
+  border-radius:6px;
+  padding:.6rem .9rem;
+  cursor:pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+button:active:not(:disabled) {
+  transform: translateY(0);
+}
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -100,6 +131,127 @@ button.secondary{background:var(--border);color:var(--text)}
 .admin-table .actions button {
   padding: 0.3rem 0.6rem;
   font-size: 0.8rem;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.status-pending { background-color: #fef3c7; color: #92400e; }
+.status-approved { background-color: #dcfce7; color: #14532d; }
+.status-rejected { background-color: #fee2e2; color: #991b1b; }
+
+/* NGO Project Cards */
+.project-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.project-card {
+  background: var(--bg-offset);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.project-card h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+.project-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* Timeline for Updates */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border);
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -2rem;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  border: 2px solid var(--bg-offset);
+  transform: translateX(-5px);
+}
+.timeline-item .card {
+  margin: 0;
+}
+.timeline-item .card:hover {
+  transform: none;
+  box-shadow: none;
+}
+.timeline-item-header {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
+/* Animations */
+#view {
+  animation: fadeIn 0.4s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Auth Page Layout */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 5vh;
+}
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Icons */
+.icon {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.spinner {
+  animation: spin 1.2s linear infinite;
 }
 
 /* Empty States & Previews */

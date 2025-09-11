@@ -1,16 +1,23 @@
 import { h } from '../components/ui.js';
+import { Icon } from '../components/icons.js';
 
 export const NGOListView = (projects) => h(`
   <div class="row">
-    <div class="col">
+    <div class="col" style="flex: 3;">
       <div class="card">
         <h2>Your Projects</h2>
-        ${(projects.results && projects.results.length > 0) ? projects.results.map(p => `
-          <div class="card">
-            <strong>${p.name}</strong>
-            <div>Status: <b>${p.status}</b></div>
-            <button data-view-project="${p.id}">Open</button>
-          </div>`).join('') : `
+        ${(projects.results && projects.results.length > 0) ? `
+          <div class="project-card-grid">
+            ${projects.results.map(p => `
+              <div class="project-card">
+                <h3>${p.name}</h3>
+                <p>${p.description.substring(0, 100)}${p.description.length > 100 ? '...' : ''}</p>
+                <div class="project-card-footer">
+                  <span class="status-badge status-${p.status.toLowerCase()}">${p.status}</span>
+                  <button data-view-project="${p.id}" class="secondary">${Icon('view')} View</button>
+                </div>
+              </div>`).join('')}
+          </div>` : `
           <div class="empty-state">
             <p>You haven't created any projects yet.</p>
             <p>Get started by creating one!</p>
@@ -18,7 +25,7 @@ export const NGOListView = (projects) => h(`
         `}
       </div>
     </div>
-    <div class="col">
+    <div class="col" style="flex: 1;">
       <div class="card">
         <h2>Create Project</h2>
         <form id="projForm">
@@ -27,7 +34,7 @@ export const NGOListView = (projects) => h(`
           <label>Latitude<input name="location_lat" type="number" step="0.000001" required /></label>
           <label>Longitude<input name="location_lon" type="number" step="0.000001" required /></label>
           <label>Area (hectares)<input name="area_hectares" type="number" step="0.01" required /></label>
-          <button>Create</button>
+          <button>${Icon('create')} Create</button>
         </form>
       </div>
     </div>
@@ -37,9 +44,10 @@ export const NGOListView = (projects) => h(`
 export const ProjectDetailView = (project, updates) => h(`
   <div class="card">
     <h2>${project.name}</h2>
-    <div>Status: <b>${project.status}</b></div>
-    <div>Area: ${project.area_hectares} ha</div>
-    <div>Location: ${project.location_lat}, ${project.location_lon}</div>
+    <p>${project.description}</p>
+    <div><b>Status:</b> <span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></div>
+    <div><b>Area:</b> ${project.area_hectares} ha</div>
+    <div><b>Location:</b> ${project.location_lat}, ${project.location_lon}</div>
   </div>
   <div class="card">
     <h3>Submit Update</h3>
@@ -47,17 +55,22 @@ export const ProjectDetailView = (project, updates) => h(`
       <label>Notes<textarea name="notes" required></textarea></label>
       <label>Image<input name="image" type="file" accept="image/*" /></label>
       <div id="img-preview-container"></div>
-      <button>Upload</button>
+      <button>${Icon('upload')} Upload</button>
     </form>
   </div>
   <div class="card">
     <h3>Updates</h3>
-    ${(updates.results && updates.results.length > 0) ? (updates.results || updates).map(u => `
-      <div class="card">
-        <div>${new Date(u.created_at).toLocaleString()}</div>
-        <div>${u.notes || ''}</div>
-        ${u.image ? `<img src="${u.image}" style="max-width:100%;height:auto" alt="update"/>` : ''}
-      </div>`).join('') : `
+    ${(updates.results && updates.results.length > 0) ? `
+      <div class="timeline">
+        ${(updates.results || updates).map(u => `
+          <div class="timeline-item">
+            <div class="timeline-item-header">${new Date(u.created_at).toLocaleString()}</div>
+            <div class="card">
+              <p>${u.notes || ''}</p>
+              ${u.image ? `<img src="${u.image}" style="max-width:100%;height:auto;border-radius:6px;" alt="update"/>` : ''}
+            </div>
+          </div>`).join('')}
+      </div>` : `
       <div class="empty-state"><p>No updates submitted yet.</p></div>
     `}
   </div>

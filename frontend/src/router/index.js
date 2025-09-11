@@ -1,6 +1,6 @@
 import { el, flash, Loader } from '../components/ui.js';
 import { authState, hydrate, logout, loginAction } from '../state/auth.js';
-import { api } from '../api/client.js';
+import { api, API_BASE } from '../api/client.js';
 import { LoginView, RegisterView } from '../views/auth.js';
 import { NGOListView, ProjectDetailView } from '../views/ngo.js';
 import { AdminListView, AdminDetailView } from '../views/admin.js';
@@ -18,6 +18,7 @@ function renderNav(){
 async function route(){
   renderNav();
   const v = el('view');
+  v.className = 'fadeIn';
   v.innerHTML = Loader();
   const hash = location.hash || '#/';
   if(!authState.user && !['#/login','#/register'].includes(hash)) {
@@ -65,19 +66,32 @@ async function route(){
 }
 
 function bind(v){
-  const disableSubmit = (form, flag) => {
-    const btn = form.querySelector('button');
-    if(btn) btn.disabled = flag;
+  const setFormSubmitting = (form, isSubmitting) => {
+    const btn = form.querySelector('button[type="submit"], button:not([type])');
+    if (!btn) return;
+
+    if (isSubmitting) {
+      btn.disabled = true;
+      if (!btn.dataset.originalContent) {
+        btn.dataset.originalContent = btn.innerHTML;
+      }
+      btn.innerHTML = 'Submitting...';
+    } else {
+      btn.disabled = false;
+      if (btn.dataset.originalContent) {
+        btn.innerHTML = btn.dataset.originalContent;
+      }
+    }
   };
 
   const lf = v.querySelector('#loginForm');
-  if(lf) lf.onsubmit = async e => { e.preventDefault(); const f=new FormData(lf); disableSubmit(lf, true); try{ await loginAction(f.get('username'), f.get('password')); location.hash='#/'; }catch(err){ flash(err.data?.detail || 'Login failed'); disableSubmit(lf, false); } };
+  if(lf) lf.onsubmit = async e => { e.preventDefault(); const f=new FormData(lf); setFormSubmitting(lf, true); try{ await loginAction(f.get('username'), f.get('password')); location.hash='#/'; }catch(err){ flash(err.data?.detail || 'Login failed'); setFormSubmitting(lf, false); } };
 
   const rf = v.querySelector('#regForm');
-  if(rf) rf.onsubmit = async e => { e.preventDefault(); const f=new FormData(rf); const payload=Object.fromEntries(f.entries()); disableSubmit(rf, true); try{ await api.register(payload); flash('Account created', true); location.hash='#/login'; }catch(err){ flash(Object.values(err.data).join(' ') || 'Register failed'); disableSubmit(rf, false); } };
+  if(rf) rf.onsubmit = async e => { e.preventDefault(); const f=new FormData(rf); const payload=Object.fromEntries(f.entries()); setFormSubmitting(rf, true); try{ await api.register(payload); flash('Account created', true); location.hash='#/login'; }catch(err){ flash(Object.values(err.data).join(' ') || 'Register failed'); setFormSubmitting(rf, false); } };
 
   const pf = v.querySelector('#projForm');
-  if(pf) pf.onsubmit = async e => { e.preventDefault(); const f=new FormData(pf); disableSubmit(pf, true); try{ const data = await api.createProject(Object.fromEntries(f.entries())); flash('Project created', true); location.hash = `#/project/${data.id}`; }catch(err){ flash('Create failed'); disableSubmit(pf, false); } };
+  if(pf) pf.onsubmit = async e => { e.preventDefault(); const f=new FormData(pf); setFormSubmitting(pf, true); try{ const data = await api.createProject(Object.fromEntries(f.entries())); flash('Project created', true); location.hash = `#/project/${data.id}`; }catch(err){ flash('Create failed'); setFormSubmitting(pf, false); } };
 
   const upd = v.querySelector('#updForm');
   if(upd) {
@@ -97,13 +111,21 @@ function bind(v){
         }
       };
     }
-    upd.onsubmit = async e => { e.preventDefault(); const f=new FormData(upd); const id=location.hash.split('/')[2]; disableSubmit(upd, true); try{ await api.createUpdate(id, f.get('notes'), imgInput.files[0]); flash('Update uploaded', true); route(); }catch(err){ flash('Upload failed'); disableSubmit(upd, false); } };
+    upd.onsubmit = async e => { e.preventDefault(); const f=new FormData(upd); const id=location.hash.split('/')[2]; setFormSubmitting(upd, true); try{ await api.createUpdate(id, f.get('notes'), imgInput.files[0]); flash('Update uploaded', true); route(); }catch(err){ flash('Upload failed'); setFormSubmitting(upd, false); } };
   }
 
   v.querySelectorAll('[data-view-project]').forEach(btn=> btn.onclick = ()=> location.hash = `#/project/${btn.getAttribute('data-view-project')}`);
   v.querySelectorAll('[data-admin-view]').forEach(btn=> btn.onclick = ()=> location.hash = `#/admin/project/${btn.getAttribute('data-admin-view')}`);
   v.querySelectorAll('[data-admin-approve]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-approve'); try{ await api.adminPatch(id,'Approved'); flash('Approved', true); route(); }catch{ flash('Action failed'); } });
   v.querySelectorAll('[data-admin-reject]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-reject'); try{ await api.adminPatch(id,'Rejected'); flash('Rejected', true); route(); }catch{ flash('Action failed'); } });
+
+  v.querySelectorAll('[data-page-url]').forEach(btn => btn.onclick = async () => {
+    const url = btn.dataset.pageUrl;
+    if(!url) return;
+    const page = await api.request(url.replace(API_BASE, ''));
+    v.innerHTML = AdminListView(page);
+    bind(v);
+  });
 }
 
 export async function initApp(){ await hydrate(); await route(); window.addEventListener('hashchange', route); }
