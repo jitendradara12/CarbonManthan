@@ -114,6 +114,32 @@ button.secondary{background:var(--border);color:var(--text)}
 .status-approved { background-color: #dcfce7; color: #14532d; }
 .status-rejected { background-color: #fee2e2; color: #991b1b; }
 
+/* NGO Project Cards */
+.project-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.project-card {
+  background: var(--bg-offset);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.project-card h3 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+.project-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
 /* Pagination */
 .pagination {
   display: flex;

@@ -2,15 +2,21 @@ import { h } from '../components/ui.js';
 
 export const NGOListView = (projects) => h(`
   <div class="row">
-    <div class="col">
+    <div class="col" style="flex: 3;">
       <div class="card">
         <h2>Your Projects</h2>
-        ${(projects.results && projects.results.length > 0) ? projects.results.map(p => `
-          <div class="card">
-            <strong>${p.name}</strong>
-            <div>Status: <b>${p.status}</b></div>
-            <button data-view-project="${p.id}">Open</button>
-          </div>`).join('') : `
+        ${(projects.results && projects.results.length > 0) ? `
+          <div class="project-card-grid">
+            ${projects.results.map(p => `
+              <div class="project-card">
+                <h3>${p.name}</h3>
+                <p>${p.description.substring(0, 100)}${p.description.length > 100 ? '...' : ''}</p>
+                <div class="project-card-footer">
+                  <span class="status-badge status-${p.status.toLowerCase()}">${p.status}</span>
+                  <button data-view-project="${p.id}" class="secondary">View Project</button>
+                </div>
+              </div>`).join('')}
+          </div>` : `
           <div class="empty-state">
             <p>You haven't created any projects yet.</p>
             <p>Get started by creating one!</p>
@@ -18,7 +24,7 @@ export const NGOListView = (projects) => h(`
         `}
       </div>
     </div>
-    <div class="col">
+    <div class="col" style="flex: 1;">
       <div class="card">
         <h2>Create Project</h2>
         <form id="projForm">
@@ -37,9 +43,10 @@ export const NGOListView = (projects) => h(`
 export const ProjectDetailView = (project, updates) => h(`
   <div class="card">
     <h2>${project.name}</h2>
-    <div>Status: <b>${project.status}</b></div>
-    <div>Area: ${project.area_hectares} ha</div>
-    <div>Location: ${project.location_lat}, ${project.location_lon}</div>
+    <p>${project.description}</p>
+    <div><b>Status:</b> <span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></div>
+    <div><b>Area:</b> ${project.area_hectares} ha</div>
+    <div><b>Location:</b> ${project.location_lat}, ${project.location_lon}</div>
   </div>
   <div class="card">
     <h3>Submit Update</h3>
