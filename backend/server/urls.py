@@ -27,6 +27,8 @@ urlpatterns = [
     path('api/', include('apps.projects.urls')),
     # simple frontend hosting (dev only)
     path('', RedirectView.as_view(url='/frontend/index.html', permanent=False)),
+    # convenience route for the public Explorer map
+    path('explorer', RedirectView.as_view(url='/frontend/explorer.html', permanent=False)),
     path('frontend/<path:path>', static_serve, {'document_root': (settings.BASE_DIR / '..' / 'frontend').resolve()}),
 ]
 

@@ -8,6 +8,7 @@ from .views import (
     AdminProjectRetrieveUpdateView,
     AdminProjectUpdateListView,
 )
+from .public_views import PublicProjectsGeoJSON, PublicProjectDetail
 
 
 urlpatterns = [
@@ -21,4 +22,8 @@ urlpatterns = [
     path('admin/projects/', AdminProjectListView.as_view(), name='admin-project-list'),
     path('admin/projects/<int:pk>/', AdminProjectRetrieveUpdateView.as_view(), name='admin-project-detail'),
     path('admin/projects/<int:pk>/updates/', AdminProjectUpdateListView.as_view(), name='admin-project-update-list'),
+
+    # Public map & explorer
+    path('public/projects.geojson', PublicProjectsGeoJSON.as_view(), name='public-projects-geojson'),
+    path('public/projects/<int:pk>/', PublicProjectDetail.as_view(), name='public-project-detail'),
 ]

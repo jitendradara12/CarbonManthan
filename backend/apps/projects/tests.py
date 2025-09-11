@@ -121,4 +121,38 @@ class TestAdminApproval(TestCase):
 		resp = self.client.get(reverse('admin-project-update-list', args=[self.project.id]))
 		self.assertEqual(resp.status_code, 200)
 
+
+class TestPublicExplorer(TestCase):
+	def setUp(self):
+		self.client = APIClient()
+		self.user = User.objects.create_user(username='ngo3', password='Password123', role='NGO')
+		self.p = Project.objects.create(
+			owner=self.user, name='PublicP', description='d',
+			location_lat=10.0, location_lon=20.0,
+			latitude=10.0, longitude=20.0, location_text='Somewhere',
+			area_hectares=1.0, status='Approved'
+		)
+
+	def test_geojson_and_filters(self):
+		# all
+		resp = self.client.get(reverse('public-projects-geojson'))
+		self.assertEqual(resp.status_code, 200)
+		data = resp.json()
+		self.assertEqual(data['type'], 'FeatureCollection')
+		self.assertTrue(len(data['features']) >= 1)
+		# status filter
+		resp = self.client.get(reverse('public-projects-geojson') + '?status=Approved')
+		self.assertEqual(resp.status_code, 200)
+		# bbox filter (should include the project)
+		resp = self.client.get(reverse('public-projects-geojson') + '?bbox=0,0,30,30')
+		self.assertEqual(resp.status_code, 200)
+		self.assertTrue(len(resp.json()['features']) >= 1)
+
+	def test_public_detail(self):
+		resp = self.client.get(reverse('public-project-detail', args=[self.p.id]))
+		self.assertEqual(resp.status_code, 200)
+		d = resp.json()
+		self.assertEqual(d['id'], self.p.id)
+		self.assertIn('coordinates', d)
+
 # Create your tests here.
