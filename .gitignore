@@ -1,4 +1,11 @@
 *.db.sqlite3
-*.instructions.md
-.github/instructions/AIinstructions.instructions.md
-.github/instructions*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.log
+db.sqlite3
+/media/
