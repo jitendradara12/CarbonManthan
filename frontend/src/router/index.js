@@ -11,7 +11,7 @@ function renderNav(){
   if(!authState.user){
     nav.innerHTML = `<a class="navlink" href="#/login">Login</a><a class="navlink" href="#/register">Register</a>`;
   } else {
-    nav.innerHTML = `<span>${authState.user.username} (${authState.user.role})</span> <a class="navlink" href="#/logout">Logout</a>`;
+    nav.innerHTML = `<span>Welcome, <strong>${authState.user.username}</strong> (${authState.user.role})</span> <a class="navlink logout-btn" href="#/logout">Logout</a>`;
   }
 }
 

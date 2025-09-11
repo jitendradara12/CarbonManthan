@@ -1,0 +1,442 @@
+/* --- General Setup --- */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #fff;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* --- Header & Navigation --- */
+.sticky-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    border-bottom: 1px solid #eee;
+}
+
+.sticky-header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #005f73;
+    text-decoration: none;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    color: #0a9396;
+}
+
+.nav-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #ee9b00;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #ca6702;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    border: 2px solid #0a9396;
+    color: #0a9396;
+}
+
+.btn-outline:hover {
+    background-color: #0a9396;
+    color: white;
+}
+
+/* --- Hero Section --- */
+.hero {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+}
+
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.video-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.5);
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+}
+
+/* --- Sections General --- */
+section {
+    padding: 6rem 0;
+}
+
+/* --- Intro Section --- */
+.intro-section {
+    background-color: #f8f9fa;
+}
+
+.two-column {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+}
+
+.intro-text {
+    flex: 1;
+}
+
+.intro-text h2 {
+    font-size: 2.5rem;
+    color: #003f5c;
+}
+
+.intro-image {
+    flex: 1;
+}
+
+.intro-image img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.icon-bar {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+    margin-top: 4rem;
+}
+
+.icon-item {
+    max-width: 200px;
+}
+
+.icon-item svg {
+    color: #0a9396;
+    margin-bottom: 1rem;
+}
+
+.icon-item h3 {
+    font-size: 1.1rem;
+    color: #003f5c;
+}
+
+/* --- Ecosystems Section --- */
+.ecosystems-section {
+    background-color: #fff;
+}
+
+.ecosystems-section h2 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    color: #003f5c;
+}
+
+.ecosystem-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+
+.card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 1.5rem;
+}
+
+.card-content h3 {
+    margin-top: 0;
+    color: #005f73;
+}
+
+/* --- Impact Section --- */
+.impact-section {
+    background-color: #003f5c;
+    color: white;
+    text-align: center;
+}
+
+.impact-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.stat {
+    font-size: 1.2rem;
+}
+
+.stat-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #ee9b00;
+}
+
+/* --- CTA Section --- */
+.cta-section {
+    background: linear-gradient(rgba(0, 95, 115, 0.8), rgba(0, 95, 115, 0.8)), url('https://images.unsplash.com/photo-1516694990334-6a55e839c99a?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+    text-align: center;
+    color: white;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+}
+
+.cta-section p {
+    max-width: 600px;
+    margin: 1rem auto 2rem auto;
+}
+
+.cta-section .btn-primary {
+    transform: scale(1.1);
+}
+
+/* --- Footer --- */
+.site-footer {
+    background-color: #0d1117;
+    color: #c9d1d9;
+    padding: 4rem 0 2rem 0;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.footer-column h3, .footer-column h4 {
+    color: white;
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-column a {
+    color: #c9d1d9;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-column a:hover {
+    color: #ee9b00;
+}
+
+.social-icons a {
+    margin-right: 1rem;
+    font-size: 1.2rem;
+}
+
+.footer-bottom {
+    text-align: center;
+    border-top: 1px solid #30363d;
+    padding-top: 2rem;
+    font-size: 0.9rem;
+    color: #8b949e;
+}
+
+/* --- Animations --- */
+.fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 992px) {
+    .nav-links, .nav-actions {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .two-column {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .ecosystem-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-container, .footer-grid {
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    section {
+        padding: 4rem 0;
+    }
+
+    .intro-text h2, .ecosystems-section h2, .impact-section h2, .cta-section h2 {
+        font-size: 2rem;
+    }
+}
+
+/* --- Hamburger Menu --- */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+}
+
+.hamburger span {
+    width: 2rem;
+    height: 0.25rem;
+    background: #333;
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+}
+
+.nav-active .nav-links {
+    position: fixed;
+    left: 0;
+    top: 70px;
+    height: calc(100vh - 70px);
+    width: 100%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+}
+
+.nav-active .nav-links a {
+    font-size: 1.5rem;
+}
+
+.nav-active .hamburger span:nth-child(1) {
+    transform: rotate(45deg);
+}
+
+.nav-active .hamburger span:nth-child(2) {
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.nav-active .hamburger span:nth-child(3) {
+    transform: rotate(-45deg);
+}
+

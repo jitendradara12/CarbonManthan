@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import landing_page
 from django.views.generic import RedirectView
 from django.views.static import serve as static_serve
 
@@ -25,10 +26,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('apps.accounts.urls')),
     path('api/', include('apps.projects.urls')),
-    # simple frontend hosting (dev only)
-    path('', RedirectView.as_view(url='/frontend/index.html', permanent=False)),
+    # Serve the new landing page at the root
+    path('', landing_page, name='landing_page'),
+    # Serve the original app at /app
+    path('app/', static_serve, {'document_root': (settings.BASE_DIR / '..' / 'frontend').resolve(), 'path': 'index.html'}),
     # convenience route for the public Explorer map
     path('explorer', RedirectView.as_view(url='/frontend/explorer.html', permanent=False)),
+    # Keep serving other frontend assets
     path('frontend/<path:path>', static_serve, {'document_root': (settings.BASE_DIR / '..' / 'frontend').resolve()}),
 ]
 
