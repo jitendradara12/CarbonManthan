@@ -113,3 +113,15 @@ Kept styling (`styles.css`) unchanged; will iterate later with accessibility imp
 ---
 
 End of log entry.
+
+### 2025-09-11 Phase 1 Enhancements Batch 2
+Delivered features:
+- JWT refresh token support with automatic 401 retry (Single retry + graceful logout on refresh failure).
+- Dark mode toggle (persists in `localStorage`, respects system preference as baseline).
+- Skeleton loading components for list/detail views to reduce layout shift.
+- Theming variables extended for dark mode; focus outline preserved in dark context.
+- Per-request loading bar still active; skeletons now cover main view content.
+
+Deferred / still pending: service worker/offline, pagination, granular per-field validation (basic summary present), advanced error boundary, test harness.
+
+Next candidate batch: add pagination wiring (if backend supplies), introduce simple unit test setup for view helpers, and begin service worker scaffold for asset caching.
