@@ -1,7 +1,7 @@
 ---
 applyTo: '**'
 ---
-#keep suggesting the next step after every prompt response
+##keep suggesting the next step after every prompt response
 ## 🎯 Our Objective: Empowering Users Through Design
 
 Your mission is to create a clean, intuitive, and responsive frontend experience for the two primary users who will bring this registry to life. The interface should feel supportive and focused, allowing them to perform their crucial tasks without friction.
@@ -129,12 +129,12 @@ Notes:
 ---
 
 ## 7) What to Build Now (Checklist)
-- [ ] Add/verify Project fields (lat, lon, location_text, area, cover_image_url, onchain_project_id, total_credits_minted).
-- [ ] Seed demo coastal projects with real-looking data.
-- [ ] Implement /api/public/projects.geojson with filters, caching, CORS.
-- [ ] Implement /api/public/projects/{id} detail with lightweight fields.
-- [ ] Add unit tests for GeoJSON shape and filters; add a Postman collection.
-- [ ] Hand off endpoint contract + sample JSON to frontend.
+- [x] Add/verify Project fields (lat, lon, location_text, area, cover_image_url, onchain_project_id, total_credits_minted).
+- [x] Seed demo coastal projects with real-looking data.
+- [x] Implement /api/public/projects.geojson with filters, caching, CORS.
+- [x] Implement /api/public/projects/{id} detail with lightweight fields.
+- [x] Add unit tests for GeoJSON shape and filters; add a Postman collection.
+- [x] Hand off endpoint contract + sample JSON to frontend (Leaflet-based Explorer at /explorer).
 
 Definition of Done:
 - Public map loads under 1s on local with 200+ projects.

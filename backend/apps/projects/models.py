@@ -16,6 +16,13 @@ class Project(models.Model):
 	location_lon = models.DecimalField(max_digits=9, decimal_places=6)
 	area_hectares = models.DecimalField(max_digits=10, decimal_places=2)
 	status = models.CharField(max_length=10, choices=PROJECT_STATUS_CHOICES, default="Pending")
+	# Map-first fields (Phase 2)
+	latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+	longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+	location_text = models.CharField(max_length=255, blank=True, default="")
+	cover_image_url = models.URLField(blank=True, default="")
+	onchain_project_id = models.BigIntegerField(null=True, blank=True)
+	total_credits_minted = models.BigIntegerField(default=0)
 	created_at = models.DateTimeField(auto_now_add=True)
 	updated_at = models.DateTimeField(auto_now=True)
 
@@ -26,6 +33,7 @@ class Project(models.Model):
 		indexes = [
 			models.Index(fields=["owner", "status"]),
 			models.Index(fields=["-created_at"]),
+			models.Index(fields=["latitude", "longitude"]),
 		]
 		constraints = [
 			models.UniqueConstraint(fields=["owner", "name"], name="unique_owner_project_name")

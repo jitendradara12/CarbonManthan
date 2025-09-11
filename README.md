@@ -76,3 +76,21 @@ Testing
 CI
 
 - GitHub Actions workflow `.github/workflows/ci.yml` runs tests on push/PR to main.
+
+Public Explorer (Map‑First MVP)
+
+- Public API endpoints:
+  - GET `/api/public/projects.geojson` — GeoJSON FeatureCollection with optional filters `status`, `bbox=minx,miny,maxx,maxy`, and `q` (name/location_text).
+  - GET `/api/public/projects/{id}` — Compact JSON detail for map panel.
+- Caching: 60–120s with ETag/Last-Modified; anonymous rate limit ~60 req/min.
+- Explorer page (no auth): open `/explorer` or `/frontend/explorer.html` after running the server.
+- Marker palette: Approved `#1B9E77`, Pending `#E6AB02`, Rejected `#D95F02`.
+- India bounds: [68, 6, 97.5, 37.5].
+
+Seed demo projects
+
+Run this to add demo coastal projects locally:
+
+```
+python3 backend/manage.py seed_projects
+```

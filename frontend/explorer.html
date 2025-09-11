@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Public Explorer – Blue Carbon Registry</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <style>
+    :root { --green:#1B9E77; --amber:#E6AB02; --orange:#D95F02; }
+    html, body { height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif; }
+    header { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #e5e7eb; }
+    header h1 { font-size:16px; margin:0; }
+    #map { height: calc(100% - 50px); }
+    .status-pill { display:inline-block; padding:2px 6px; border-radius:10px; color:#fff; font-size:12px; }
+    .pill-Approved { background: var(--green); }
+    .pill-Pending { background: var(--amber); }
+    .pill-Rejected { background: var(--orange); }
+    .popup { max-width: 280px; }
+    .popup img { width:100%; height:auto; border-radius:6px; margin:6px 0; }
+    .controls { position:absolute; top:64px; left:12px; z-index:999; background:#fff; padding:8px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    .controls input, .controls select { font:inherit; padding:6px 8px; }
+  </style>
+  <script>
+    window.API_BASE = '/api';
+  </script>
+</head>
+<body>
+  <header>
+    <h1>India Blue Carbon – Public Explorer</h1>
+    <nav>
+      <a href="/frontend/index.html">Dashboard</a>
+    </nav>
+  </header>
+  <div id="map"></div>
+  <div class="controls">
+    <select id="status">
+      <option value="">All statuses</option>
+      <option>Approved</option>
+      <option>Pending</option>
+      <option>Rejected</option>
+    </select>
+    <input id="search" placeholder="Search name or location" />
+    <label style="font-size:12px;display:inline-flex;gap:6px;align-items:center;margin:0 8px;">
+      <input id="inView" type="checkbox" checked /> Only within map
+    </label>
+    <button id="apply">Apply</button>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script>
+    (function(){
+      const API = () => (window.API_BASE || '/api');
+      const indiaBounds = [[6.0, 68.0], [37.5, 97.5]]; // [S,W], [N,E]
+      const statusColors = { Approved:'#1B9E77', Pending:'#E6AB02', Rejected:'#D95F02' };
+
+      const map = L.map('map');
+      const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      map.fitBounds(indiaBounds);
+
+      const clusters = L.markerClusterGroup();
+      map.addLayer(clusters);
+
+      function markerFor(feature){
+        const st = feature.properties.status;
+        const color = statusColors[st] || '#3388ff';
+        const icon = L.divIcon({ className:'', html:`<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)"></div>`, iconSize:[16,16] });
+        const [lon, lat] = feature.geometry.coordinates;
+        const m = L.marker([lat, lon], { icon });
+        const p = feature.properties;
+        const chain = p.onchain_project_id ? `On-chain: #${p.onchain_project_id} · ${p.total_credits_minted || 0} credits` : 'On-chain: Not yet';
+        const img = p.cover_image_url ? `<img src="${p.cover_image_url}" alt="cover"/>` : '';
+        const html = `<div class="popup">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <strong>${p.name}</strong>
+            <span class="status-pill pill-${p.status}">${p.status}</span>
+          </div>
+          <div style="color:#555">${p.location_text || ''}</div>
+          ${img}
+          <div>Area: ${p.area_hectares ?? '—'} ha</div>
+          <div>${chain}</div>
+          <a href="${API()}/public/projects/${p.id}" target="_blank" rel="noopener">JSON</a>
+        </div>`;
+        m.bindPopup(html);
+        return m;
+      }
+
+      function currentBBox(){
+        const b = map.getBounds();
+        const sw = b.getSouthWest();
+        const ne = b.getNorthEast();
+        // bbox=minx,miny,maxx,maxy (lon/lat)
+        return `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
+      }
+
+      async function loadData(){
+        const s = document.getElementById('status').value;
+        const q = document.getElementById('search').value.trim();
+        const inView = document.getElementById('inView').checked;
+        const params = new URLSearchParams();
+        if (s) params.set('status', s);
+        if (q) params.set('q', q);
+        if (inView) params.set('bbox', currentBBox());
+        const url = `${API()}/public/projects.geojson?${params.toString()}`;
+        const resp = await fetch(url, { headers: { 'Accept':'application/geo+json, application/json' } });
+        if (!resp.ok) { console.error('Failed to load GeoJSON'); return; }
+        const data = await resp.json();
+        clusters.clearLayers();
+        (data.features || []).forEach(f => clusters.addLayer(markerFor(f)));
+        if ((data.features || []).length) {
+          const bb = L.geoJSON(data).getBounds();
+          if (bb.isValid()) map.fitBounds(bb.pad(0.2));
+        } else {
+          map.fitBounds(indiaBounds);
+        }
+      }
+
+      document.getElementById('apply').onclick = loadData;
+      // Debounce helper
+      let timer = null;
+      function debounce(fn, wait=250){
+        clearTimeout(timer);
+        timer = setTimeout(fn, wait);
+      }
+      map.on('moveend', () => {
+        if (document.getElementById('inView').checked) debounce(loadData, 300);
+      });
+      loadData();
+    })();
+  </script>
+</body>
+</html>
