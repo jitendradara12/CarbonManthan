@@ -1,4 +1,5 @@
 import { h } from '../components/ui.js';
+import { Icon } from '../components/icons.js';
 
 export const AdminListView = (projects) => {
   const hasProjects = projects.results && projects.results.length > 0;
@@ -22,9 +23,9 @@ export const AdminListView = (projects) => {
             <td>${p.owner_username || p.owner}</td>
             <td><span class="status-badge status-${p.status.toLowerCase()}">${p.status}</span></td>
             <td class="actions">
-              <button data-admin-view="${p.id}" class="secondary">View</button>
-              <button data-admin-approve="${p.id}" ${p.status !== 'Pending' ? 'disabled' : ''}>Approve</button>
-              <button data-admin-reject="${p.id}" ${p.status !== 'Pending' ? 'disabled' : ''}>Reject</button>
+              <button data-admin-view="${p.id}" class="secondary">${Icon('view')} View</button>
+              <button data-admin-approve="${p.id}" ${p.status !== 'Pending' ? 'disabled' : ''}>${Icon('approve')} Approve</button>
+              <button data-admin-reject="${p.id}" ${p.status !== 'Pending' ? 'disabled' : ''}>${Icon('reject')} Reject</button>
             </td>
           </tr>`).join('')}
       </tbody>
@@ -51,18 +52,23 @@ export const AdminDetailView = (project, updates) => h(`
     <div><b>Area:</b> ${project.area_hectares} ha</div>
     <div><b>Location:</b> ${project.location_lat}, ${project.location_lon}</div>
     <div class="actions" style="margin-top: 1rem;">
-      <button data-admin-approve="${project.id}" ${project.status !== 'Pending' ? 'disabled' : ''}>Approve</button>
-      <button data-admin-reject="${project.id}" ${project.status !== 'Pending' ? 'disabled' : ''}>Reject</button>
+      <button data-admin-approve="${project.id}" ${project.status !== 'Pending' ? 'disabled' : ''}>${Icon('approve')} Approve</button>
+      <button data-admin-reject="${project.id}" ${project.status !== 'Pending' ? 'disabled' : ''}>${Icon('reject')} Reject</button>
     </div>
   </div>
   <div class="card">
     <h3>Updates</h3>
-    ${(updates.results && updates.results.length > 0) ? (updates.results||updates).map(u=>`
-      <div class="card">
-        <div>${new Date(u.created_at).toLocaleString()}</div>
-        <div>${u.notes||''}</div>
-        ${u.image?`<img src="${u.image}" style="max-width:100%;height:auto" alt="update"/>`:''}
-      </div>`).join('') : `
+    ${(updates.results && updates.results.length > 0) ? `
+      <div class="timeline">
+        ${(updates.results||updates).map(u=>`
+          <div class="timeline-item">
+            <div class="timeline-item-header">${new Date(u.created_at).toLocaleString()}</div>
+            <div class="card">
+              <p>${u.notes||''}</p>
+              ${u.image?`<img src="${u.image}" style="max-width:100%;height:auto;border-radius:6px;" alt="update"/>`:''}
+            </div>
+          </div>`).join('')}
+      </div>` : `
       <div class="empty-state"><p>No updates for this project yet.</p></div>
     `}
   </div>

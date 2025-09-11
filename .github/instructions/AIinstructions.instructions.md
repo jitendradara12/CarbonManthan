@@ -4,6 +4,8 @@ applyTo: '**'
 #keep suggesting the next step after every prompt response
 ## 🎯 Our Objective: Empowering Users Through Design
 
+##the hackathon is near!!!, so focus on ui over ux because the judges will see the ui only
+
 Your mission is to create a clean, intuitive, and responsive frontend experience for the two primary users who will bring this registry to life. The interface should feel supportive and focused, allowing them to perform their crucial tasks without friction.
 
 ### The User Journeys
@@ -63,6 +65,14 @@ Changelog (AI updates):
     - Admin dashboard (list, detail, approve/reject, updates list)
   - Added `/api/auth/me/` endpoint for role-aware UI.
   - Added missing read endpoints: NGO `GET /api/projects/{id}/updates/list/`; Admin `GET /api/admin/projects/{id}/` and `/api/admin/projects/{id}/updates/`.
+
+- [2025-09-12] Step 5 UI Polish Pass 1:
+  - Added professional-looking animations and hover effects in `styles.css`.
+  - Created a centralized `icons.js` component for SVG icons.
+  - Redesigned `auth.js` views with a cleaner, centered layout and integrated icons into buttons.
+  - Integrated icons into all buttons in `admin.js` and `ngo.js` views for a consistent look and feel.
+  - Added a fade-in animation to all view transitions in `router/index.js`.
+  - Next: Further UI refinements, potentially adding charts or more visual elements.
 
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 
