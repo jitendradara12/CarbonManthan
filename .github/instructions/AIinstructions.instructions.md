@@ -1,10 +1,23 @@
 ---
 applyTo: '**'
 ---
+#keep suggesting the next step after every prompt response
+## 🎯 Our Objective: Empowering Users Through Design
+
+Your mission is to create a clean, intuitive, and responsive frontend experience for the two primary users who will bring this registry to life. The interface should feel supportive and focused, allowing them to perform their crucial tasks without friction.
+
+### The User Journeys
+
+* **Neha, the NGO Manager:** Her journey begins with registering her community's new mangrove plantation project. She'll use the dashboard you build to proudly upload photos and notes, tracking her project's progress from "Pending" to "Approved." Her work will finally have the visibility it deserves.
+
+* **Dr. Sharma, the NCCR Verifier:** He needs an efficient and clear dashboard to review the incredible work being done by NGOs across the country. Your interface will give him a bird's-eye view of all projects, allowing him to easily access details and confidently approve their status, ensuring the integrity of the entire system.
+=======
+
+---
 # Phase 1: Core Off-Chain Application Instructions
 for AI: keep track of the current state of the repository. and update this file accodingly as you do the work.
 
----
+
 
 Changelog (AI updates):
 
@@ -98,75 +111,6 @@ This section provides the necessary context for any developer or AI agent to und
 - Problem Domain: We are creating a digital Monitoring, Reporting, and Verification (MRV) system for blue carbon projects. The system must be trustworthy and transparent.
 - Phase 1 Scope: This phase is entirely "off-chain." We are building a standard CRUD (Create, Read, Update, Delete) application. No blockchain interaction is required yet. The focus is on building robust APIs and a clear data structure.
 - Repo Structure: All backend code should reside in the `backend/` directory. Create new Django apps inside the `backend/apps/` folder as needed (e.g., accounts, projects).
-
-### 2.3. User Personas & Stories
-
-- Persona 1: Neha (NGO Project Manager)
-  - As Neha, I want to register an account for my NGO.
-  - As Neha, I want to create a new restoration project with details like name, location (latitude/longitude), area, and a description.
-  - As Neha, I want to view a dashboard of all my projects and their current status (Pending, Approved, Rejected).
-  - As Neha, I want to upload periodic updates (photos, text reports) to a specific project to show our progress.
-
-- Persona 2: Dr. Sharma (NCCR Admin/Verifier)
-  - As Dr. Sharma, I need a secure login to the admin portal.
-  - As Dr. Sharma, I want to see a queue of all projects submitted by NGOs that are pending verification.
-  - As Dr. Sharma, I want to click on a project to view all its details and the updates submitted by the NGO.
-  - As Dr. Sharma, I want to approve or reject a project with a single click.
-
-### 2.4. Data Models (The Blueprint)
-
-Here is the proposed Django model structure. Create these models in a new app, e.g., `backend/apps/projects/models.py`.
-
-```python
-# backend/apps/accounts/models.py (or extend the default User model)
-from django.contrib.auth.models import AbstractUser
-from django.db import models
-
-class User(AbstractUser):
-    USER_ROLE_CHOICES = (
-        ("NGO", "NGO/Community"),
-        ("ADMIN", "NCCR Admin"),
-        ("BUYER", "Corporate/Buyer"),
-    )
-    role = models.CharField(max_length=10, choices=USER_ROLE_CHOICES)
-```
-
-```python
-# backend/apps/projects/models.py
-from django.db import models
-from ..accounts.models import User  # Adjust import path as needed
-
-class Project(models.Model):
-    PROJECT_STATUS_CHOICES = (
-        ("Pending", "Pending"),
-        ("Approved", "Approved"),
-        ("Rejected", "Rejected"),
-    )
-
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="projects")
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    location_lat = models.DecimalField(max_digits=9, decimal_places=6)
-    location_lon = models.DecimalField(max_digits=9, decimal_places=6)
-    area_hectares = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=10, choices=PROJECT_STATUS_CHOICES, default="Pending")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.name
-
-class ProjectUpdate(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="updates")
-    notes = models.TextField()
-    image = models.ImageField(upload_to="project_updates/")
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Update for {self.project.name} at {self.created_at.strftime('%Y-%m-%d')}"
-```
-
----
 
 ## 3. Actionable Tasks & Execution Plan
 
