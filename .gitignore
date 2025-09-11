@@ -1,2 +1,3 @@
 *.db.sqlite3
 *.instructions.md
+.github/instructions/AIinstructions.instructions.md
