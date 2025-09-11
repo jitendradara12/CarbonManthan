@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CarbonManthan</title>
   <link rel="stylesheet" href="/frontend/styles.css" />
-  <script defer src="/frontend/app.js"></script>
+  <!-- Modular frontend build (Phase 1) -->
+  <script type="module" defer src="/frontend/src/main.js"></script>
   <script>
     window.API_BASE = '/api';
   </script>
@@ -16,13 +17,16 @@
   <header class="topbar">
     <div class="container">
       <h1>Blue Carbon Registry</h1>
-      <nav id="nav"></nav>
+      <div class="topbar-rhs">
+        <nav id="nav"></nav>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">🌙</button>
+      </div>
     </div>
   </header>
   <main class="container">
     <section id="flash" class="flash" hidden></section>
     <section id="view"></section>
   </main>
-  <footer class="footer"><div class="container">Phase 1 demo UI</div></footer>
+  <footer class="footer"><div class="container">Phase 1 demo UI – Modular</div></footer>
 </body>
 </html>
