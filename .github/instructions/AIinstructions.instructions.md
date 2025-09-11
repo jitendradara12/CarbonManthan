@@ -5,7 +5,7 @@ Welcome, developer. You're not just building a user interface; you're creating t
 Every component you build, every user interaction you design, brings us one step closer to a transparent and effective system for healing our planet. Let's build something that matters.
 
 ---
-
+#keep suggesting the next step after every prompt response
 ## 🎯 Our Objective: Empowering Users Through Design
 
 Your mission is to create a clean, intuitive, and responsive frontend experience for the two primary users who will bring this registry to life. The interface should feel supportive and focused, allowing them to perform their crucial tasks without friction.

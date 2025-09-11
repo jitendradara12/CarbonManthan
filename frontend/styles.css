@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--text); transition: background .2s, color .
 .card{background:var(--bg-offset);border:1px solid var(--border);border-radius:8px;padding:1rem;margin:1rem 0}
 .row{display:flex;gap:1rem;flex-wrap:wrap}
 .col{flex:1 1 280px}
-input,select,textarea{width:100%;padding:.6rem;border:1px solid var(--border);border-radius:6px; background: var(--bg); color: var(--text);}
+input,select,textarea{width:98%;padding:.3rem;border:1px solid var(--border);border-radius:8px; background: var(--bg); color: var(--text);}
 input:focus, select:focus, textarea:focus { outline: 2px solid var(--focus-ring); }
 label{font-size:.9rem;color:var(--muted); display: block; margin-bottom: .75rem;}
 button{background:var(--primary);color:#fff;border:0;border-radius:6px;padding:.6rem .9rem;cursor:pointer}
