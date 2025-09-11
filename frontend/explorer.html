@@ -66,6 +66,18 @@
       const clusters = L.markerClusterGroup();
       map.addLayer(clusters);
 
+      // Keep some UI state
+      let lastETag = null;
+      let isInitialLoad = true;
+      let openFeatureId = null;
+      let markersById = new Map();
+      map.on('popupopen', (e) => {
+        const layer = e.layer;
+        if (layer && layer._featureId != null) {
+          openFeatureId = layer._featureId;
+        }
+      });
+
       function markerFor(feature){
         const st = feature.properties.status;
         const color = statusColors[st] || '#3388ff';
@@ -73,6 +85,7 @@
         const [lon, lat] = feature.geometry.coordinates;
         const m = L.marker([lat, lon], { icon });
         const p = feature.properties;
+        m._featureId = p.id;
         const chain = p.onchain_project_id ? `On-chain: #${p.onchain_project_id} · ${p.total_credits_minted || 0} credits` : 'On-chain: Not yet';
         const img = p.cover_image_url ? `<img src="${p.cover_image_url}" alt="cover"/>` : '';
         const html = `<div class="popup">
@@ -98,7 +111,7 @@
         return `${sw.lng},${sw.lat},${ne.lng},${ne.lat}`;
       }
 
-      async function loadData(){
+      async function loadData(opts={fit:false, source:'manual'}){
         const s = document.getElementById('status').value;
         const q = document.getElementById('search').value.trim();
         const inView = document.getElementById('inView').checked;
@@ -107,20 +120,48 @@
         if (q) params.set('q', q);
         if (inView) params.set('bbox', currentBBox());
         const url = `${API()}/public/projects.geojson?${params.toString()}`;
-        const resp = await fetch(url, { headers: { 'Accept':'application/geo+json, application/json' } });
+        const headers = { 'Accept':'application/geo+json, application/json' };
+        if (lastETag) headers['If-None-Match'] = lastETag;
+        const resp = await fetch(url, { headers });
         if (!resp.ok) { console.error('Failed to load GeoJSON'); return; }
+        const newETag = resp.headers.get('ETag');
+        if (newETag && lastETag && newETag === lastETag) {
+          // No change, keep current markers and popup
+          return;
+        }
         const data = await resp.json();
+        lastETag = newETag || null;
+        // Rebuild clusters
+        const prevOpenId = openFeatureId;
+        openFeatureId = null;
+        markersById = new Map();
         clusters.clearLayers();
-        (data.features || []).forEach(f => clusters.addLayer(markerFor(f)));
-        if ((data.features || []).length) {
-          const bb = L.geoJSON(data).getBounds();
-          if (bb.isValid()) map.fitBounds(bb.pad(0.2));
-        } else {
-          map.fitBounds(indiaBounds);
+        (data.features || []).forEach(f => {
+          const m = markerFor(f);
+          markersById.set(m._featureId, m);
+          clusters.addLayer(m);
+        });
+        const shouldFit = opts.fit || (isInitialLoad && !inView);
+        if (shouldFit) {
+          if ((data.features || []).length) {
+            const bb = L.geoJSON(data).getBounds();
+            if (bb.isValid()) map.fitBounds(bb.pad(0.2));
+          } else {
+            map.fitBounds(indiaBounds);
+          }
+        }
+        isInitialLoad = false;
+        // Restore open popup if possible
+        if (prevOpenId && markersById.has(prevOpenId)) {
+          const layer = markersById.get(prevOpenId);
+          clusters.zoomToShowLayer(layer, () => layer.openPopup());
         }
       }
 
-      document.getElementById('apply').onclick = loadData;
+      document.getElementById('apply').onclick = () => {
+        const inView = document.getElementById('inView').checked;
+        loadData({ fit: !inView, source: 'apply' });
+      };
       // Debounce helper
       let timer = null;
       function debounce(fn, wait=250){
@@ -128,9 +169,9 @@
         timer = setTimeout(fn, wait);
       }
       map.on('moveend', () => {
-        if (document.getElementById('inView').checked) debounce(loadData, 300);
+        if (document.getElementById('inView').checked) debounce(() => loadData({ fit:false, source:'move' }), 350);
       });
-      loadData();
+      loadData({ fit:true, source:'init' });
     })();
   </script>
 </body>
