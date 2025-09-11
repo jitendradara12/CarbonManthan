@@ -102,6 +102,27 @@ button.secondary{background:var(--border);color:var(--text)}
   font-size: 0.8rem;
 }
 
+/* Status Badges */
+.status-badge {
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.status-pending { background-color: #fef3c7; color: #92400e; }
+.status-approved { background-color: #dcfce7; color: #14532d; }
+.status-rejected { background-color: #fee2e2; color: #991b1b; }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  color: var(--muted);
+}
+
 /* Empty States & Previews */
 .empty-state {
   text-align: center;

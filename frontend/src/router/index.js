@@ -104,6 +104,14 @@ function bind(v){
   v.querySelectorAll('[data-admin-view]').forEach(btn=> btn.onclick = ()=> location.hash = `#/admin/project/${btn.getAttribute('data-admin-view')}`);
   v.querySelectorAll('[data-admin-approve]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-approve'); try{ await api.adminPatch(id,'Approved'); flash('Approved', true); route(); }catch{ flash('Action failed'); } });
   v.querySelectorAll('[data-admin-reject]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-reject'); try{ await api.adminPatch(id,'Rejected'); flash('Rejected', true); route(); }catch{ flash('Action failed'); } });
+
+  v.querySelectorAll('[data-page-url]').forEach(btn => btn.onclick = async () => {
+    const url = btn.dataset.pageUrl;
+    if(!url) return;
+    const page = await api.request(url.replace(API_BASE, ''));
+    v.innerHTML = AdminListView(page);
+    bind(v);
+  });
 }
 
 export async function initApp(){ await hydrate(); await route(); window.addEventListener('hashchange', route); }
