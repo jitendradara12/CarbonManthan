@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('apps.accounts.urls')),
     path('api/', include('apps.projects.urls')),
+    path('api/tokens/', include('apps.tokens.urls')),
     # Serve the new landing page at the root
     path('', landing_page, name='landing_page'),
     # Serve the original app at /app

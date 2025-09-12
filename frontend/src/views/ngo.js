@@ -54,6 +54,7 @@ export const ProjectDetailView = (project, updates) => h(`
     <p>${project.description}</p>
     <div><b>Status:</b> <span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></div>
     <div><b>Area:</b> ${project.area_hectares} ha</div>
+  <div><b>Total credits minted:</b> ${project.total_credits_minted ?? 0}</div>
     <div class="row" style="gap:1rem;align-items:flex-start;">
       <div class="col" style="flex:1;min-width:260px;"><div id="map-project" class="map-embed map-embed-lg"></div></div>
       <div class="col" style="flex:1;min-width:220px;">

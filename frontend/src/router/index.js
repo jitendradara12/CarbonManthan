@@ -191,6 +191,34 @@ function bind(v){
   v.querySelectorAll('[data-admin-view]').forEach(btn=> btn.onclick = ()=> location.hash = `#/admin/project/${btn.getAttribute('data-admin-view')}`);
   v.querySelectorAll('[data-admin-approve]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-approve'); try{ await api.adminPatch(id,'Approved'); flash('Approved', true); route(); }catch{ flash('Action failed'); } });
   v.querySelectorAll('[data-admin-reject]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-reject'); try{ await api.adminPatch(id,'Rejected'); flash('Rejected', true); route(); }catch{ flash('Action failed'); } });
+  const mintBtn = v.querySelector('[data-admin-mint]');
+  if (mintBtn) mintBtn.onclick = async () => {
+    const id = mintBtn.getAttribute('data-admin-mint');
+    const n = parseInt(v.querySelector('#mint-credits')?.value || '0', 10);
+    if (!n || n < 1) return flash('Enter credits to mint');
+    try { await api.mint(id, n); flash('Minted (dry-run)', true); route(); } catch(e) { flash(e?.data?.detail || 'Mint failed'); }
+  };
+
+  const buyerForm = v.querySelector('#buyerActions');
+  if (buyerForm) {
+    const purchaseBtn = v.querySelector('#btnPurchase');
+    const burnBtn = v.querySelector('#btnBurn');
+    if (purchaseBtn) purchaseBtn.onclick = async ()=>{
+      const fd = new FormData(buyerForm);
+      const pid = parseInt(fd.get('projectId'),10);
+      const credits = parseInt(fd.get('credits'),10);
+      const price = parseFloat(fd.get('price')||'0');
+      if(!pid || !credits) return flash('Provide project and credits');
+      try { await api.purchase(pid, credits, price); flash('Purchased (recorded)', true); } catch(e) { flash(e?.data?.detail || 'Purchase failed'); }
+    };
+    if (burnBtn) burnBtn.onclick = async ()=>{
+      const fd = new FormData(buyerForm);
+      const pid = parseInt(fd.get('projectId'),10);
+      const credits = parseInt(fd.get('credits'),10);
+      if(!pid || !credits) return flash('Provide project and credits');
+      try { await api.burn(pid, credits); flash('Burned (dry-run)', true); } catch(e) { flash(e?.data?.detail || 'Burn failed'); }
+    };
+  }
 
   v.querySelectorAll('[data-page-url]').forEach(btn => btn.onclick = async () => {
     const url = btn.dataset.pageUrl;
