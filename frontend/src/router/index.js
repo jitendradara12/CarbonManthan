@@ -41,10 +41,17 @@ async function route(){
           const setPoint = (lat, lon) => {
             latInput.value = Number(lat).toFixed(6);
             lonInput.value = Number(lon).toFixed(6);
-            if (marker) marker.setLatLng([lat, lon]); else marker = L.marker([lat, lon], {draggable:true}).addTo(map);
-            marker.on('dragend', () => { const c = marker.getLatLng(); latInput.value = c.lat.toFixed(6); lonInput.value = c.lng.toFixed(6); });
+            if (marker) {
+              marker.setLatLng([lat, lon]);
+            } else {
+              marker = L.marker([lat, lon], {draggable:true}).addTo(map);
+              marker.on('dragend', () => { const c = marker.getLatLng(); latInput.value = c.lat.toFixed(6); lonInput.value = c.lng.toFixed(6); });
+            }
+            map.setView([lat, lon], 13);
           };
           map.on('click', (e) => setPoint(e.latlng.lat, e.latlng.lng));
+          // Expose setPoint for the button handler
+          mapDiv.setPoint = setPoint;
           if (latInput.value && lonInput.value) {
             setPoint(parseFloat(latInput.value), parseFloat(lonInput.value));
             map.setView([parseFloat(latInput.value), parseFloat(lonInput.value)], 10);
@@ -187,6 +194,38 @@ function bind(v){
     upd.onsubmit = async e => { e.preventDefault(); const f=new FormData(upd); const id=location.hash.split('/')[2]; setFormSubmitting(upd, true); try{ await api.createUpdate(id, f.get('notes'), imgInput.files[0]); flash('Update uploaded', true); route(); }catch(err){ flash('Upload failed'); setFormSubmitting(upd, false); } };
   }
 
+  const locationBtn = v.querySelector('#auto-location-btn');
+  if (locationBtn) {
+    locationBtn.addEventListener('click', () => {
+      const latInput = v.querySelector('input[name=location_lat]');
+      const lonInput = v.querySelector('input[name=location_lon]');
+      const mapDiv = v.querySelector('#map-picker');
+
+      if (navigator.geolocation) {
+        locationBtn.disabled = true;
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            latInput.value = latitude.toFixed(6);
+            lonInput.value = longitude.toFixed(6);
+            flash('Location fetched successfully!', 'ok');
+            
+            if (mapDiv.setPoint) {
+              mapDiv.setPoint(latitude, longitude);
+            }
+            locationBtn.disabled = false;
+          },
+          (error) => {
+            flash(`Error: ${error.message}`, 'error');
+            locationBtn.disabled = false;
+          }
+        );
+      } else {
+        flash('Geolocation is not supported by this browser.', 'error');
+      }
+    });
+  }
+
   v.querySelectorAll('[data-view-project]').forEach(btn=> btn.onclick = ()=> location.hash = `#/project/${btn.getAttribute('data-view-project')}`);
   v.querySelectorAll('[data-admin-view]').forEach(btn=> btn.onclick = ()=> location.hash = `#/admin/project/${btn.getAttribute('data-admin-view')}`);
   v.querySelectorAll('[data-admin-approve]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-approve'); try{ await api.adminPatch(id,'Approved'); flash('Approved', true); route(); }catch{ flash('Action failed'); } });
@@ -224,6 +263,47 @@ function bind(v){
       try { await api.burn(pid, credits); flash('Burned (dry-run)', true); } catch(e) { flash(e?.data?.detail || 'Burn failed'); }
     };
   }
+
+  const mintBtn = v.querySelector('[data-admin-mint]');
+  if (mintBtn) mintBtn.onclick = async () => {
+    const id = mintBtn.getAttribute('data-admin-mint');
+    const input = document.getElementById('mint-credits');
+    const n = parseInt((input?.value || '0'), 10);
+    if (!n) return flash('Enter credits');
+    const resEl = document.getElementById('mint-result');
+    const old = mintBtn.innerHTML; mintBtn.disabled = true; mintBtn.innerHTML = 'Minting…';
+    try { const r = await api.mint(id, n); if(resEl) resEl.textContent = `Result: tx=${r.tx_hash||'simulated'}, total=${r.total_credits_minted}`; flash('Minted (dry-run)', true); route(); } catch(e) { if(resEl) resEl.textContent = ''; flash(e?.data?.detail || 'Mint failed'); } finally { mintBtn.disabled = false; mintBtn.innerHTML = old; };
+  };
+
+  const qaBtn = v.querySelector('[data-admin-quickapprove]');
+  if (qaBtn) qaBtn.onclick = async ()=>{
+    const id = qaBtn.getAttribute('data-admin-quickapprove');
+    const old = qaBtn.innerHTML; qaBtn.disabled = true; qaBtn.innerHTML = 'Approving…';
+    try { await api.adminPatch(id,'Approved'); try{ await api.mint(id, 100); }catch{} flash('Approved + minted 100', true); route(); } catch { flash('Quick approve failed'); } finally { qaBtn.disabled = false; qaBtn.innerHTML = old; }
+  };
+
+  const purchaseBtn = v.querySelector('#btnPurchase');
+  if (purchaseBtn) purchaseBtn.onclick = async ()=>{
+    const form = v.querySelector('#buyerActions');
+    const fd = new FormData(form);
+    const pid = fd.get('projectId');
+    const credits = parseInt(fd.get('credits')||'0', 10);
+    const price = fd.get('price');
+    if (!pid || !credits) return flash('Enter Project ID and credits');
+    const old = purchaseBtn.innerHTML; purchaseBtn.disabled = true; purchaseBtn.innerHTML = 'Purchasing…';
+    try { const r = await api.purchase(pid, credits, price); flash(`Purchased (id ${r.purchase_id})`, true); } catch(e) { flash(e?.data?.detail || 'Purchase failed'); } finally { purchaseBtn.disabled = false; purchaseBtn.innerHTML = old; }
+  };
+
+  const burnBtn = v.querySelector('#btnBurn');
+  if (burnBtn) burnBtn.onclick = async ()=>{
+    const form = v.querySelector('#buyerActions');
+    const fd = new FormData(form);
+    const pid = fd.get('projectId');
+    const credits = parseInt(fd.get('credits')||'0', 10);
+    if (!pid || !credits) return flash('Enter Project ID and credits');
+    const old = burnBtn.innerHTML; burnBtn.disabled = true; burnBtn.innerHTML = 'Burning…';
+    try { const r = await api.burn(pid, credits); flash(`Burned (tx ${r.tx_hash||'simulated'})`, true); } catch(e) { flash(e?.data?.detail || 'Burn failed'); } finally { burnBtn.disabled = false; burnBtn.innerHTML = old; }
+  };
 
   v.querySelectorAll('[data-page-url]').forEach(btn => btn.onclick = async () => {
     const url = btn.dataset.pageUrl;
