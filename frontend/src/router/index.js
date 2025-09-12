@@ -259,6 +259,47 @@ function bind(v){
     };
   }
 
+  const mintBtn = v.querySelector('[data-admin-mint]');
+  if (mintBtn) mintBtn.onclick = async () => {
+    const id = mintBtn.getAttribute('data-admin-mint');
+    const input = document.getElementById('mint-credits');
+    const n = parseInt((input?.value || '0'), 10);
+    if (!n) return flash('Enter credits');
+    const resEl = document.getElementById('mint-result');
+    const old = mintBtn.innerHTML; mintBtn.disabled = true; mintBtn.innerHTML = 'Minting…';
+    try { const r = await api.mint(id, n); if(resEl) resEl.textContent = `Result: tx=${r.tx_hash||'simulated'}, total=${r.total_credits_minted}`; flash('Minted (dry-run)', true); route(); } catch(e) { if(resEl) resEl.textContent = ''; flash(e?.data?.detail || 'Mint failed'); } finally { mintBtn.disabled = false; mintBtn.innerHTML = old; };
+  };
+
+  const qaBtn = v.querySelector('[data-admin-quickapprove]');
+  if (qaBtn) qaBtn.onclick = async ()=>{
+    const id = qaBtn.getAttribute('data-admin-quickapprove');
+    const old = qaBtn.innerHTML; qaBtn.disabled = true; qaBtn.innerHTML = 'Approving…';
+    try { await api.adminPatch(id,'Approved'); try{ await api.mint(id, 100); }catch{} flash('Approved + minted 100', true); route(); } catch { flash('Quick approve failed'); } finally { qaBtn.disabled = false; qaBtn.innerHTML = old; }
+  };
+
+  const purchaseBtn = v.querySelector('#btnPurchase');
+  if (purchaseBtn) purchaseBtn.onclick = async ()=>{
+    const form = v.querySelector('#buyerActions');
+    const fd = new FormData(form);
+    const pid = fd.get('projectId');
+    const credits = parseInt(fd.get('credits')||'0', 10);
+    const price = fd.get('price');
+    if (!pid || !credits) return flash('Enter Project ID and credits');
+    const old = purchaseBtn.innerHTML; purchaseBtn.disabled = true; purchaseBtn.innerHTML = 'Purchasing…';
+    try { const r = await api.purchase(pid, credits, price); flash(`Purchased (id ${r.purchase_id})`, true); } catch(e) { flash(e?.data?.detail || 'Purchase failed'); } finally { purchaseBtn.disabled = false; purchaseBtn.innerHTML = old; }
+  };
+
+  const burnBtn = v.querySelector('#btnBurn');
+  if (burnBtn) burnBtn.onclick = async ()=>{
+    const form = v.querySelector('#buyerActions');
+    const fd = new FormData(form);
+    const pid = fd.get('projectId');
+    const credits = parseInt(fd.get('credits')||'0', 10);
+    if (!pid || !credits) return flash('Enter Project ID and credits');
+    const old = burnBtn.innerHTML; burnBtn.disabled = true; burnBtn.innerHTML = 'Burning…';
+    try { const r = await api.burn(pid, credits); flash(`Burned (tx ${r.tx_hash||'simulated'})`, true); } catch(e) { flash(e?.data?.detail || 'Burn failed'); } finally { burnBtn.disabled = false; burnBtn.innerHTML = old; }
+  };
+
   v.querySelectorAll('[data-page-url]').forEach(btn => btn.onclick = async () => {
     const url = btn.dataset.pageUrl;
     if(!url) return;

@@ -78,6 +78,7 @@ export const AdminDetailView = (project, updates) => h(`
       <div class="empty-state"><p>No updates for this project yet.</p></div>
     `}
   </div>
+<<<<<<< HEAD
   <div class="card">
     <h3>Token Actions</h3>
     <div class="row" style="gap:.5rem;align-items:flex-end;">
@@ -93,4 +94,7 @@ export const AdminDetailView = (project, updates) => h(`
     </div>
     <p class="muted">On-chain integration runs in dry-run mode until configured.</p>
   </div>
+=======
+  <div id="mint-result" class="muted" style="margin-top:.5rem;"></div>
+>>>>>>> 179b2e4 (minor ui change)
 `);
