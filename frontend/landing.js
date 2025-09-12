@@ -3,11 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const header = document.querySelector('.sticky-header');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
-            header.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-            header.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+            header.classList.add('scrolled');
         } else {
-            header.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-            header.style.boxShadow = 'none';
+            header.classList.remove('scrolled');
         }
     });
 
@@ -74,5 +72,28 @@ document.addEventListener('DOMContentLoaded', () => {
     sections.forEach(section => {
         section.classList.add('fade-in-section');
         sectionObserver.observe(section);
+    });
+
+    // Theme Toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    const applyTheme = (theme) => {
+        if (theme === 'dark') {
+            body.classList.add('dark-theme');
+            themeToggle.innerHTML = '☀️'; // Sun icon for dark mode
+        } else {
+            body.classList.remove('dark-theme');
+            themeToggle.innerHTML = '🌙'; // Moon icon for light mode
+        }
+    };
+
+    let currentTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(currentTheme);
+
+    themeToggle.addEventListener('click', () => {
+        currentTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+        localStorage.setItem('theme', currentTheme);
+        applyTheme(currentTheme);
     });
 });
