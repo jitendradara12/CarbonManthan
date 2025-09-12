@@ -78,4 +78,8 @@ export const api = {
   adminProject: (id)=> request(`/admin/projects/${id}/`),
   adminUpdates: (id)=> request(`/admin/projects/${id}/updates/`),
   adminPatch: (id,status)=> request(`/admin/projects/${id}/`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ status }) }),
+  // Tokens
+  mint: (projectId, credits)=> request(`/tokens/admin/projects/${projectId}/mint/`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ credits }) }),
+  purchase: (projectId, credits, price_per_credit)=> request(`/tokens/buyer/projects/${projectId}/purchase/`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ credits, price_per_credit }) }),
+  burn: (projectId, credits)=> request(`/tokens/buyer/projects/${projectId}/burn/`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ credits }) }),
 };

@@ -2,8 +2,18 @@ import { h } from '../components/ui.js';
 
 export const BuyerDashboardView = () => h(`
   <div class="card">
-    <h2>Marketplace</h2>
-    <p>Welcome to the Blue Carbon Marketplace. Here you will be able to browse and purchase verified carbon credits from projects across India.</p>
-    <p><em>This feature is currently under development and will be available in Phase 2.</em></p>
+    <h2>Buy & Burn Credits (MVP)</h2>
+    <p class="muted">Enter Project ID to simulate a purchase or burn (temporary demo UI).</p>
+    <form id="buyerActions">
+      <div class="row" style="gap:.75rem;">
+        <div class="col" style="max-width:200px;"><label>Project ID<input name="projectId" type="number" required /></label></div>
+        <div class="col" style="max-width:160px;"><label>Credits<input name="credits" type="number" min="1" step="1" required /></label></div>
+        <div class="col" style="max-width:160px;"><label>Price/credit (₹)<input name="price" type="number" step="0.01" /></label></div>
+        <div class="col" style="flex:0 0 auto; display:flex; gap:.5rem; align-items:flex-end;">
+          <button type="button" id="btnPurchase">Purchase</button>
+          <button type="button" id="btnBurn">Burn</button>
+        </div>
+      </div>
+    </form>
   </div>
 `);

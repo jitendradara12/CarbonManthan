@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # Local apps
     'apps.accounts.apps.AccountsConfig',
     'apps.projects.apps.ProjectsConfig',
+    'apps.tokens.apps.TokensConfig',
 ]
 
 MIDDLEWARE = [
@@ -156,3 +157,12 @@ REST_FRAMEWORK = {
 # CORS (allow all in dev; tighten in prod)
 CORS_ALLOW_ALL_ORIGINS = env.bool('CORS_ALLOW_ALL_ORIGINS', True)
 CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
+
+# Web3 / Token settings (env-driven)
+WEB3_RPC_URL = env.str('WEB3_RPC_URL', default='')
+TOKEN_CONTRACT_ADDRESS = env.str('TOKEN_CONTRACT_ADDRESS', default='')
+TOKEN_DECIMALS = env.int('TOKEN_DECIMALS', default=18)
+CUSTODIAN_PRIVATE_KEY = env.str('CUSTODIAN_PRIVATE_KEY', default='')
+CUSTODIAN_ADDRESS = env.str('CUSTODIAN_ADDRESS', default='')
+CHAIN_ID = env.int('CHAIN_ID', default=80001)  # Polygon Mumbai by default
+TOKEN_DRY_RUN = env.bool('TOKEN_DRY_RUN', default=True)  # simulate when true

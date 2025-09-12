@@ -50,6 +50,7 @@ export const AdminDetailView = (project, updates) => h(`
     <div><b>Status:</b> <span class="status-badge status-${project.status.toLowerCase()}">${project.status}</span></div>
     <div><b>Owner ID:</b> ${project.owner}</div>
     <div><b>Area:</b> ${project.area_hectares} ha</div>
+  <div><b>Total credits minted:</b> ${project.total_credits_minted ?? 0}</div>
     <div class="row" style="gap:1rem;align-items:flex-start;">
       <div class="col" style="flex:1;min-width:260px;"><div id="map-project" class="map-embed map-embed-lg"></div></div>
       <div class="col" style="flex:1;min-width:220px;">
@@ -76,5 +77,20 @@ export const AdminDetailView = (project, updates) => h(`
       </div>` : `
       <div class="empty-state"><p>No updates for this project yet.</p></div>
     `}
+  </div>
+  <div class="card">
+    <h3>Token Actions</h3>
+    <div class="row" style="gap:.5rem;align-items:flex-end;">
+      <div class="col" style="max-width:220px;">
+        <label>Mint credits<input type="number" min="1" step="1" id="mint-credits" /></label>
+      </div>
+      <div class="col" style="flex:0 0 auto;">
+        <button data-admin-mint="${project.id}">Mint</button>
+      </div>
+      <div class="col" style="flex:1;">
+        <div>Total minted (db): <strong>${project.total_credits_minted ?? 0}</strong></div>
+      </div>
+    </div>
+    <p class="muted">On-chain integration runs in dry-run mode until configured.</p>
   </div>
 `);
