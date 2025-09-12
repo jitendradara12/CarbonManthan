@@ -41,13 +41,14 @@ body {
     background-color: var(--header-bg, rgba(255, 255, 255, 0.9));
     backdrop-filter: blur(10px);
     z-index: 1000;
-    border-bottom: 1px solid var(--border-color, #eee);
+    border-bottom: 1px solid var(--border-color );
     transition: background-color 0.3s;
 }
 
 .sticky-header nav {
     display: flex;
     justify-content: space-between;
+
     align-items: center;
     height: 70px;
 }

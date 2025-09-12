@@ -14,13 +14,13 @@
     <header class="sticky-header">
         <nav class="container">
             <a href="/" class="logo">CarbonManthan</a>
-            <ul class="nav-links">
+            <!-- <ul class="nav-links">
                 <li><a href="#" class="active">Home</a></li>
                 <li><a href="#">About Us</a></li>
                 <li><a href="#">Our Projects</a></li>
                 <li><a href="#">News</a></li>
                 <li><a href="#">Contact</a></li>
-            </ul>
+            </ul> -->
             <div class="nav-actions">
                 <a href="/app/#/login" class="btn btn-outline">Login</a>
                 <a href="/app/#/register" class="btn btn-primary">Register</a>
@@ -46,6 +46,55 @@
                 <a href="#about" class="btn btn-primary">Explore Our Mission</a>
             </div>
         </section>
+
+            <section class="map-preview-section" style="padding:40px 0;">
+                <div class="container">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                        <h2 style="margin:0;">Explore Projects Across India</h2>
+                        <div style="display:flex;gap:10px;align-items:center;">
+                            <a href="/explorer" class="btn btn-outline">Open Explorer</a>
+                            <a href="https://mumbai.polygonscan.com/" target="_blank" rel="noopener" class="btn btn-primary">View Blockchain Transactions</a>
+                        </div>
+                    </div>
+                    <div id="landing-map" style="height:380px;margin-top:16px;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;"></div>
+                    <div style="margin-top:10px;font-size:14px;color:#374151;display:flex;gap:16px;">
+                        <span>Approved: <strong id="lm-approved">0</strong></span>
+                        <span>Pending: <strong id="lm-pending">0</strong></span>
+                        <span>Rejected: <strong id="lm-rejected">0</strong></span>
+                        <span>Total: <strong id="lm-total">0</strong></span>
+                    </div>
+                </div>
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+                <script>
+                    (function(){
+                        const mapDiv = document.getElementById('landing-map');
+                        if(!mapDiv || !window.L) return;
+                        const map = L.map(mapDiv, { zoomControl: true, scrollWheelZoom: false });
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap'}).addTo(map);
+                        const bounds = [[6.0, 68.0], [37.5, 97.5]];
+                        map.fitBounds(bounds);
+                        fetch('/api/public/projects.geojson')
+                            .then(r => r.ok ? r.json() : { features: [] })
+                            .then(data => {
+                                const cnt = { Approved:0, Pending:0, Rejected:0 };
+                                (data.features||[]).forEach(f => {
+                                    const st = f.properties?.status;
+                                    if (cnt[st] != null) cnt[st]++;
+                                    const [lon, lat] = f.geometry.coordinates;
+                                    const color = st==='Approved'?'#1B9E77':(st==='Pending'?'#E6AB02':'#D95F02');
+                                    const icon = L.divIcon({ className:'', html:`<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)"></div>`, iconSize:[16,16] });
+                                    L.marker([lat, lon], { icon }).addTo(map);
+                                });
+                                document.getElementById('lm-approved').textContent = cnt.Approved;
+                                document.getElementById('lm-pending').textContent = cnt.Pending;
+                                document.getElementById('lm-rejected').textContent = cnt.Rejected;
+                                document.getElementById('lm-total').textContent = (data.features||[]).length;
+                            })
+                            .catch(()=>{});
+                    })();
+                </script>
+            </section>
 
         <section id="about" class="intro-section">
             <div class="container">

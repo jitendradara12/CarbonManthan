@@ -14,7 +14,7 @@
     header { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #e5e7eb; }
     header h1 { font-size:16px; margin:0; }
     #map { height: calc(100% - 50px); }
-  .legend { position:absolute; bottom:16px; left:16px; z-index:998; background:#fff; padding:8px 10px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.08); font-size:12px; color:#374151; }
+  .legend { position:absolute; bottom:16px; left:16px; z-index:998; background:#fff; padding:8px 10px; border-radius:16px; box-shadow:0 2px 10px rgba(0,0,0,.08); font-size:12px; color:#374151; }
   .legend h4 { margin:0 0 6px 0; font-size:12px; color:#111827; }
   .legend .item { display:flex; align-items:center; gap:8px; margin:4px 0; }
   .dot { width:10px; height:10px; border-radius:50%; display:inline-block; box-shadow:0 0 0 1px rgba(0,0,0,.15) inset; }
@@ -22,14 +22,14 @@
   .dot.amber { background: var(--amber); }
   .dot.orange { background: var(--orange); }
   #loading { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(255,255,255,.6); z-index:1000; font-weight:600; color:#111827; }
-    .status-pill { display:inline-block; padding:2px 6px; border-radius:10px; color:#fff; font-size:12px; }
+    .status-pill { display:inline-block; padding:8px 14px; border-radius:28px; color:#fff; font-size:12px; }
     .pill-Approved { background: var(--green); }
     .pill-Pending { background: var(--amber); }
     .pill-Rejected { background: var(--orange); }
     .popup { max-width: 280px; }
-    .popup img { width:100%; height:auto; border-radius:6px; margin:6px 0; }
-    .controls { position:absolute; top:64px; right:16px; z-index:999; background:#fff; padding:8px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
-    .controls input, .controls select { font:inherit; padding:6px 8px; }
+    .popup img { width:100%; height:auto; border-radius:16px; margin:8px 0; }
+    .controls { position:absolute; top:64px; right:16px; z-index:999; background:#fff; padding:14px; border-radius:22px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    .controls input, .controls select { font:inherit; padding:6px 8px; border-radius: 24px; }
   </style>
   <script>
     window.API_BASE = '/api';
@@ -52,7 +52,7 @@
     </select>
     <input id="search" placeholder="Search name or location" />
     <label style="font-size:12px;display:inline-flex;gap:6px;align-items:center;margin:0 8px;">
-      <input id="inView" type="checkbox" checked /> Only within map
+      <input id="inView" type="checkbox" /> Only within map
     </label>
     <button id="apply">Apply</button>
     <button id="reset">Reset view</button>
@@ -98,7 +98,7 @@
       function markerFor(feature){
         const st = feature.properties.status;
         const color = statusColors[st] || '#3388ff';
-        const icon = L.divIcon({ className:'', html:`<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)"></div>`, iconSize:[16,16] });
+  const icon = L.divIcon({ className:'', html:`<div style="background:${color};width:16px;height:16px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)"></div>`, iconSize:[20,20] });
         const [lon, lat] = feature.geometry.coordinates;
         const m = L.marker([lat, lon], { icon });
         const p = feature.properties;
