@@ -81,6 +81,14 @@ Changelog (AI updates):
   - Resolved merge conflict markers in `frontend/src/views/admin.js` and consolidated the Token Actions card.
   - De-duplicated admin and buyer button bindings in `frontend/src/router/index.js`; added inline mint result area.
 
+- [2025-09-12] Phase 2 Explorer polish and landing map:
+  - Explorer: bigger status markers, legend counts, loading overlay, and quick status chips; default shows all projects.
+  - Landing: embedded mini public map with counters and a link to Polygonscan (Mumbai).
+  - Public project detail now exposes `supply` { remaining, purchased, minted }.
+  - Buyer purchases now enforce a simple supply cap (returns 409 with available value).
+  - Seed command enhanced: adds cover images, varied statuses, and some minted credits for Approved to demo supply.
+  - Explorer side panel: Added a right-hand details panel with images and supply info; popup includes a Details button to open it.
+
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 
 Objective for this Phase: Build a functional web application that manages users, projects, and data uploads. This is the "off-chain" foundation before we integrate any blockchain components.
@@ -202,9 +210,9 @@ Notes:
 - [x] Hand off endpoint contract + sample JSON to frontend (Leaflet-based Explorer at /explorer).
 
 Definition of Done:
-- Public map loads under 1s on local with 200+ projects.
+- Public map loads under 1s on local with 200+ projects.display
 - Pins cluster smoothly; popups show clean info.
-- Approved projects visibly distinct; “on-chain” fields display when present.
+- Approved projects visibly distinct; “on-chain” fields  when present.
 
 ---
 
