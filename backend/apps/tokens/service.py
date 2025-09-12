@@ -29,9 +29,9 @@ def _get_w3():
     return w3
 
 
-def _to_units(credits: int) -> int:
+def _to_units(credits: int) -> Decimal:
     # credits are whole tokens; convert to smallest units using decimals
-    return int(Decimal(credits) * (10 ** settings.TOKEN_DECIMALS))
+    return Decimal(credits) * (10 ** settings.TOKEN_DECIMALS)
 
 
 def mint(project: Project, credits: int, meta: dict | None = None) -> TxResult:

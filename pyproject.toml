@@ -1,5 +1,6 @@
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "server.settings"
+DJANGO_SETTINGS_MODULE = "backend.server.settings"
+pythonpath = ["backend"]
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
 addopts = "-ra -q --strict-markers --disable-warnings --maxfail=1 --cov=backend --cov-report=term-missing"
 testpaths = ["backend/apps"]

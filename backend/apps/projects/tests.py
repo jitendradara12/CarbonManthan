@@ -5,7 +5,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from io import BytesIO
 from PIL import Image
 from django.contrib.auth import get_user_model
-from .models import Project
+from apps.projects.models import Project
 
 
 User = get_user_model()

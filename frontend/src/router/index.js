@@ -237,6 +237,11 @@ function bind(v){
     if (!n || n < 1) return flash('Enter credits to mint');
     try { await api.mint(id, n); flash('Minted (dry-run)', true); route(); } catch(e) { flash(e?.data?.detail || 'Mint failed'); }
   };
+  const qaBtn = v.querySelector('[data-admin-quickapprove]');
+  if (qaBtn) qaBtn.onclick = async ()=>{
+    const id = qaBtn.getAttribute('data-admin-quickapprove');
+    try { await api.adminPatch(id,'Approved'); try{ await api.mint(id, 100); }catch{} flash('Approved + minted 100', true); route(); } catch { flash('Quick approve failed'); }
+  };
 
   const buyerForm = v.querySelector('#buyerActions');
   if (buyerForm) {
