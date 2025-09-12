@@ -16,4 +16,8 @@ export const BuyerDashboardView = () => h(`
       </div>
     </form>
   </div>
+  <div class="card" id="buyerPurchases">
+    <h3>My Purchases</h3>
+    <div class="muted">Loading…</div>
+  </div>
 `);
