@@ -41,10 +41,17 @@ async function route(){
           const setPoint = (lat, lon) => {
             latInput.value = Number(lat).toFixed(6);
             lonInput.value = Number(lon).toFixed(6);
-            if (marker) marker.setLatLng([lat, lon]); else marker = L.marker([lat, lon], {draggable:true}).addTo(map);
-            marker.on('dragend', () => { const c = marker.getLatLng(); latInput.value = c.lat.toFixed(6); lonInput.value = c.lng.toFixed(6); });
+            if (marker) {
+              marker.setLatLng([lat, lon]);
+            } else {
+              marker = L.marker([lat, lon], {draggable:true}).addTo(map);
+              marker.on('dragend', () => { const c = marker.getLatLng(); latInput.value = c.lat.toFixed(6); lonInput.value = c.lng.toFixed(6); });
+            }
+            map.setView([lat, lon], 13);
           };
           map.on('click', (e) => setPoint(e.latlng.lat, e.latlng.lng));
+          // Expose setPoint for the button handler
+          mapDiv.setPoint = setPoint;
           if (latInput.value && lonInput.value) {
             setPoint(parseFloat(latInput.value), parseFloat(lonInput.value));
             map.setView([parseFloat(latInput.value), parseFloat(lonInput.value)], 10);
@@ -185,6 +192,39 @@ function bind(v){
       };
     }
     upd.onsubmit = async e => { e.preventDefault(); const f=new FormData(upd); const id=location.hash.split('/')[2]; setFormSubmitting(upd, true); try{ await api.createUpdate(id, f.get('notes'), imgInput.files[0]); flash('Update uploaded', true); route(); }catch(err){ flash('Upload failed'); setFormSubmitting(upd, false); } };
+  }
+
+  const locationBtn = v.querySelector('#auto-location-btn');
+  if (locationBtn) {
+    locationBtn.addEventListener('click', () => {
+      const latInput = v.querySelector('input[name=location_lat]');
+      const lonInput = v.querySelector('input[name=location_lon]');
+      const mapDiv = v.querySelector('#map-picker');
+      const map = mapDiv ? mapDiv._leaflet_map : null;
+
+      if (navigator.geolocation) {
+        locationBtn.disabled = true;
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            latInput.value = latitude.toFixed(6);
+            lonInput.value = longitude.toFixed(6);
+            flash('Location fetched successfully!', 'ok');
+            
+            if (mapDiv.setPoint) {
+              mapDiv.setPoint(latitude, longitude);
+            }
+            locationBtn.disabled = false;
+          },
+          (error) => {
+            flash(`Error: ${error.message}`, 'error');
+            locationBtn.disabled = false;
+          }
+        );
+      } else {
+        flash('Geolocation is not supported by this browser.', 'error');
+      }
+    });
   }
 
   v.querySelectorAll('[data-view-project]').forEach(btn=> btn.onclick = ()=> location.hash = `#/project/${btn.getAttribute('data-view-project')}`);

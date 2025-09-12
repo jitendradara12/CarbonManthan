@@ -34,14 +34,17 @@ export const NGOListView = (projects) => h(`
           <div>
             <label>Pick Location</label>
             <div id="map-picker" class="map-embed"></div>
-            <div class="row" style="gap:.5rem;margin-top:.5rem;">
+            <div class="row" style="gap:.5rem;margin-top:.5rem; align-items: flex-end;">
               <div class="col"><label>Latitude<input name="location_lat" type="number" step="0.000001" required /></label></div>
               <div class="col"><label>Longitude<input name="location_lon" type="number" step="0.000001" required /></label></div>
+              <div class="col" style="flex-grow: 0; margin-bottom: 0.75rem;">
+                <button type="button" id="auto-location-btn" class="secondary" title="Use Current Location">${Icon('locate')} My Location</button>
+              </div>
             </div>
-            <small class="muted">Tip: Click on the map to set coordinates. You can fine-tune numbers if needed.</small>
+            <small class="muted">Tip: Click on the map to set coordinates, or use the locate button. You can fine-tune numbers if needed.</small>
           </div>
           <label>Area (hectares)<input name="area_hectares" type="number" step="0.01" required /></label>
-          <button>${Icon('create')} Create</button>
+          <button type="submit">${Icon('create')} Create</button>
         </form>
       </div>
     </div>
