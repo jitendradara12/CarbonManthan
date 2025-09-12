@@ -200,7 +200,6 @@ function bind(v){
       const latInput = v.querySelector('input[name=location_lat]');
       const lonInput = v.querySelector('input[name=location_lon]');
       const mapDiv = v.querySelector('#map-picker');
-      const map = mapDiv ? mapDiv._leaflet_map : null;
 
       if (navigator.geolocation) {
         locationBtn.disabled = true;
