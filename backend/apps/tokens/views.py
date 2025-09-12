@@ -45,3 +45,22 @@ class BuyerBurnView(APIView):
         project = get_object_or_404(Project, pk=pk)
         res = burn(project, credits, meta={'by': request.user.id, 'type': 'buyer-burn'})
         return Response({'ok': True, 'tx_hash': res.tx_hash, 'simulated': res.simulated, 'total_credits_minted': project.total_credits_minted})
+
+class BuyerPurchasesListView(APIView):
+    permission_classes = [IsBuyer]
+
+    def get(self, request):
+        qs = Purchase.objects.filter(buyer=request.user).order_by('-created_at')[:100]
+        data = [
+            {
+                'id': p.id,
+                'project': p.project_id,
+                'credits': p.credits,
+                'price_per_credit': str(p.price_per_credit),
+                'created_at': p.created_at.isoformat(),
+                'tx_hash': p.tx_hash,
+                'status': p.status,
+            }
+            for p in qs
+        ]
+        return Response({'results': data, 'count': qs.count()})

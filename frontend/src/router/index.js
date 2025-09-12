@@ -122,6 +122,25 @@ async function route(){
     v.innerHTML = `<div class="card"><h2>Error</h2><p>Could not load page content.</p></div>`;
   }
   bind(v);
+  // After bind, if buyer dashboard, fetch purchases
+  if ((location.hash || '#/') === '#/' && authState.user?.role === 'BUYER') {
+    try {
+      const pane = v.querySelector('#buyerPurchases');
+      if (pane) {
+        const data = await api.purchases();
+        if (!data.results || data.results.length === 0) {
+          pane.innerHTML = '<h3>My Purchases</h3><div class="empty-state"><p>No purchases yet.</p></div>';
+        } else {
+          pane.innerHTML = '<h3>My Purchases</h3>' +
+            '<table class="admin-table"><thead><tr><th>ID</th><th>Project</th><th>Credits</th><th>Price/credit</th><th>Date</th></tr></thead><tbody>' +
+            data.results.map(p=>`<tr><td>${p.id}</td><td>${p.project}</td><td>${p.credits}</td><td>${p.price_per_credit}</td><td>${new Date(p.created_at).toLocaleString()}</td></tr>`).join('') +
+            '</tbody></table>';
+        }
+      }
+    } catch (e) {
+      // ignore render error
+    }
+  }
 }
 
 function bind(v){
@@ -230,39 +249,7 @@ function bind(v){
   v.querySelectorAll('[data-admin-view]').forEach(btn=> btn.onclick = ()=> location.hash = `#/admin/project/${btn.getAttribute('data-admin-view')}`);
   v.querySelectorAll('[data-admin-approve]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-approve'); try{ await api.adminPatch(id,'Approved'); flash('Approved', true); route(); }catch{ flash('Action failed'); } });
   v.querySelectorAll('[data-admin-reject]').forEach(btn=> btn.onclick = async ()=> { const id=btn.getAttribute('data-admin-reject'); try{ await api.adminPatch(id,'Rejected'); flash('Rejected', true); route(); }catch{ flash('Action failed'); } });
-  const mintBtn = v.querySelector('[data-admin-mint]');
-  if (mintBtn) mintBtn.onclick = async () => {
-    const id = mintBtn.getAttribute('data-admin-mint');
-    const n = parseInt(v.querySelector('#mint-credits')?.value || '0', 10);
-    if (!n || n < 1) return flash('Enter credits to mint');
-    try { await api.mint(id, n); flash('Minted (dry-run)', true); route(); } catch(e) { flash(e?.data?.detail || 'Mint failed'); }
-  };
-  const qaBtn = v.querySelector('[data-admin-quickapprove]');
-  if (qaBtn) qaBtn.onclick = async ()=>{
-    const id = qaBtn.getAttribute('data-admin-quickapprove');
-    try { await api.adminPatch(id,'Approved'); try{ await api.mint(id, 100); }catch{} flash('Approved + minted 100', true); route(); } catch { flash('Quick approve failed'); }
-  };
-
-  const buyerForm = v.querySelector('#buyerActions');
-  if (buyerForm) {
-    const purchaseBtn = v.querySelector('#btnPurchase');
-    const burnBtn = v.querySelector('#btnBurn');
-    if (purchaseBtn) purchaseBtn.onclick = async ()=>{
-      const fd = new FormData(buyerForm);
-      const pid = parseInt(fd.get('projectId'),10);
-      const credits = parseInt(fd.get('credits'),10);
-      const price = parseFloat(fd.get('price')||'0');
-      if(!pid || !credits) return flash('Provide project and credits');
-      try { await api.purchase(pid, credits, price); flash('Purchased (recorded)', true); } catch(e) { flash(e?.data?.detail || 'Purchase failed'); }
-    };
-    if (burnBtn) burnBtn.onclick = async ()=>{
-      const fd = new FormData(buyerForm);
-      const pid = parseInt(fd.get('projectId'),10);
-      const credits = parseInt(fd.get('credits'),10);
-      if(!pid || !credits) return flash('Provide project and credits');
-      try { await api.burn(pid, credits); flash('Burned (dry-run)', true); } catch(e) { flash(e?.data?.detail || 'Burn failed'); }
-    };
-  }
+  // Admin enhanced handlers and buyer actions below
 
   const mintBtn = v.querySelector('[data-admin-mint]');
   if (mintBtn) mintBtn.onclick = async () => {

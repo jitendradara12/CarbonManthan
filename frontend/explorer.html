@@ -14,14 +14,22 @@
     header { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid #e5e7eb; }
     header h1 { font-size:16px; margin:0; }
     #map { height: calc(100% - 50px); }
-    .status-pill { display:inline-block; padding:2px 6px; border-radius:10px; color:#fff; font-size:12px; }
+  .legend { position:absolute; bottom:16px; left:16px; z-index:998; background:#fff; padding:8px 10px; border-radius:16px; box-shadow:0 2px 10px rgba(0,0,0,.08); font-size:12px; color:#374151; }
+  .legend h4 { margin:0 0 6px 0; font-size:12px; color:#111827; }
+  .legend .item { display:flex; align-items:center; gap:8px; margin:4px 0; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; box-shadow:0 0 0 1px rgba(0,0,0,.15) inset; }
+  .dot.green { background: var(--green); }
+  .dot.amber { background: var(--amber); }
+  .dot.orange { background: var(--orange); }
+  #loading { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(255,255,255,.6); z-index:1000; font-weight:600; color:#111827; }
+    .status-pill { display:inline-block; padding:8px 14px; border-radius:28px; color:#fff; font-size:12px; }
     .pill-Approved { background: var(--green); }
     .pill-Pending { background: var(--amber); }
     .pill-Rejected { background: var(--orange); }
     .popup { max-width: 280px; }
-    .popup img { width:100%; height:auto; border-radius:6px; margin:6px 0; }
-    .controls { position:absolute; top:64px; right:16px; z-index:999; background:#fff; padding:8px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
-    .controls input, .controls select { font:inherit; padding:6px 8px; }
+    .popup img { width:100%; height:auto; border-radius:16px; margin:8px 0; }
+    .controls { position:absolute; top:64px; right:16px; z-index:999; background:#fff; padding:14px; border-radius:22px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+    .controls input, .controls select { font:inherit; padding:6px 8px; border-radius: 24px; }
   </style>
   <script>
     window.API_BASE = '/api';
@@ -44,10 +52,19 @@
     </select>
     <input id="search" placeholder="Search name or location" />
     <label style="font-size:12px;display:inline-flex;gap:6px;align-items:center;margin:0 8px;">
-      <input id="inView" type="checkbox" checked /> Only within map
+      <input id="inView" type="checkbox" /> Only within map
     </label>
     <button id="apply">Apply</button>
+    <button id="reset">Reset view</button>
   </div>
+  <div class="legend" id="legend">
+    <h4>Projects</h4>
+    <div class="item"><span class="dot green"></span> Approved: <strong id="cnt-approved">0</strong></div>
+    <div class="item"><span class="dot amber"></span> Pending: <strong id="cnt-pending">0</strong></div>
+    <div class="item"><span class="dot orange"></span> Rejected: <strong id="cnt-rejected">0</strong></div>
+    <div class="item" style="margin-top:6px; border-top:1px solid #e5e7eb; padding-top:6px;">Total: <strong id="cnt-total">0</strong></div>
+  </div>
+  <div id="loading">Loading…</div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script>
@@ -81,7 +98,7 @@
       function markerFor(feature){
         const st = feature.properties.status;
         const color = statusColors[st] || '#3388ff';
-        const icon = L.divIcon({ className:'', html:`<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)"></div>`, iconSize:[16,16] });
+  const icon = L.divIcon({ className:'', html:`<div style="background:${color};width:16px;height:16px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)"></div>`, iconSize:[20,20] });
         const [lon, lat] = feature.geometry.coordinates;
         const m = L.marker([lat, lon], { icon });
         const p = feature.properties;
@@ -122,8 +139,12 @@
         const url = `${API()}/public/projects.geojson?${params.toString()}`;
         const headers = { 'Accept':'application/geo+json, application/json' };
         if (lastETag) headers['If-None-Match'] = lastETag;
-        const resp = await fetch(url, { headers });
-        if (!resp.ok) { console.error('Failed to load GeoJSON'); return; }
+        // show loading overlay
+        const loading = document.getElementById('loading');
+        if (loading) loading.style.display = 'flex';
+        const resp = await fetch(url, { headers }).catch(()=>null);
+        if (loading) loading.style.display = 'none';
+        if (!resp || !resp.ok) { console.error('Failed to load GeoJSON'); return; }
         const newETag = resp.headers.get('ETag');
         if (newETag && lastETag && newETag === lastETag) {
           // No change, keep current markers and popup
@@ -136,11 +157,19 @@
         openFeatureId = null;
         markersById = new Map();
         clusters.clearLayers();
-        (data.features || []).forEach(f => {
+        const feats = (data.features || []);
+        (feats).forEach(f => {
           const m = markerFor(f);
           markersById.set(m._featureId, m);
           clusters.addLayer(m);
         });
+        // update legend counts
+        const cnt = { Approved:0, Pending:0, Rejected:0 };
+        feats.forEach(f=>{ const st=f.properties?.status; if (cnt[st] != null) cnt[st]++; });
+        document.getElementById('cnt-approved').textContent = cnt.Approved;
+        document.getElementById('cnt-pending').textContent = cnt.Pending;
+        document.getElementById('cnt-rejected').textContent = cnt.Rejected;
+        document.getElementById('cnt-total').textContent = feats.length;
         const shouldFit = opts.fit || (isInitialLoad && !inView);
         if (shouldFit) {
           if ((data.features || []).length) {
@@ -161,6 +190,9 @@
       document.getElementById('apply').onclick = () => {
         const inView = document.getElementById('inView').checked;
         loadData({ fit: !inView, source: 'apply' });
+      };
+      document.getElementById('reset').onclick = () => {
+        map.fitBounds(indiaBounds);
       };
       // Debounce helper
       let timer = null;

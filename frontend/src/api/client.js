@@ -82,4 +82,5 @@ export const api = {
   mint: (projectId, credits)=> request(`/tokens/admin/projects/${projectId}/mint/`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ credits }) }),
   purchase: (projectId, credits, price_per_credit)=> request(`/tokens/buyer/projects/${projectId}/purchase/`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ credits, price_per_credit }) }),
   burn: (projectId, credits)=> request(`/tokens/buyer/projects/${projectId}/burn/`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ credits }) }),
+  purchases: ()=> request(`/tokens/buyer/purchases/`),
 };

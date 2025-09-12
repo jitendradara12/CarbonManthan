@@ -77,6 +77,10 @@ Changelog (AI updates):
 - [2025-09-12] Step 5.1 admin UX tweak:
   - Added a Quick Approve button in Admin project detail that sets status=Approved and auto-mints 100 credits (dry-run) to showcase the full flow during demos.
 
+- [2025-09-12] Step 5.2 frontend cleanup:
+  - Resolved merge conflict markers in `frontend/src/views/admin.js` and consolidated the Token Actions card.
+  - De-duplicated admin and buyer button bindings in `frontend/src/router/index.js`; added inline mint result area.
+
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 
 Objective for this Phase: Build a functional web application that manages users, projects, and data uploads. This is the "off-chain" foundation before we integrate any blockchain components.
