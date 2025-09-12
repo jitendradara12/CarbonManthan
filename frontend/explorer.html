@@ -30,6 +30,21 @@
     .popup img { width:100%; height:auto; border-radius:16px; margin:8px 0; }
     .controls { position:absolute; top:64px; right:16px; z-index:999; background:#fff; padding:14px; border-radius:22px; box-shadow:0 2px 10px rgba(0,0,0,.08); }
     .controls input, .controls select { font:inherit; padding:6px 8px; border-radius: 24px; }
+    .controls input, .controls select, .controls button { font:inherit; padding:6px 8px; }
+    .chipbar { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+    .chip { border:1px solid #e5e7eb; background:#fff; border-radius:999px; padding:4px 10px; font-size:12px; cursor:pointer; }
+    .chip.approved { border-color:#1B9E77; color:#1B9E77; }
+    .chip.pending { border-color:#E6AB02; color:#B45309; }
+    .chip.rejected { border-color:#D95F02; color:#B91C1C; }
+  .chip.active { background:#111827; color:#fff; border-color:#111827; }
+  /* Side panel */
+  .sidepanel { position:absolute; top:50px; right:0; width:360px; max-width:90vw; height:calc(100% - 50px); background:#fff; box-shadow:-2px 0 12px rgba(0,0,0,.08); transform: translateX(100%); transition: transform .25s ease; z-index:1000; display:flex; flex-direction:column; }
+  .sidepanel.open { transform: translateX(0); }
+  .sidepanel header { padding:12px 14px; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center; }
+  .sidepanel .content { padding:12px 14px; overflow:auto; }
+  .sidepanel .thumbs { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+  .btn-close { background:#111827; color:#fff; border:none; padding:6px 10px; border-radius:8px; cursor:pointer; }
+  .btn-link { background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:6px 10px; cursor:pointer; font:inherit; }
   </style>
   <script>
     window.API_BASE = '/api';
@@ -43,6 +58,13 @@
     </nav>
   </header>
   <div id="map"></div>
+  <aside id="panel" class="sidepanel" aria-hidden="true">
+    <header>
+      <strong id="p-title">Details</strong>
+      <button id="p-close" class="btn-close">Close</button>
+    </header>
+    <div class="content" id="p-body"></div>
+  </aside>
   <div class="controls">
     <select id="status">
       <option value="">All statuses</option>
@@ -56,6 +78,12 @@
     </label>
     <button id="apply">Apply</button>
     <button id="reset">Reset view</button>
+    <div class="chipbar">
+      <button class="chip" data-chip-status="">All</button>
+      <button class="chip approved" data-chip-status="Approved">Approved</button>
+      <button class="chip pending" data-chip-status="Pending">Pending</button>
+      <button class="chip rejected" data-chip-status="Rejected">Rejected</button>
+    </div>
   </div>
   <div class="legend" id="legend">
     <h4>Projects</h4>
@@ -93,6 +121,27 @@
         if (layer && layer._featureId != null) {
           openFeatureId = layer._featureId;
         }
+        const pid = layer && layer._featureId;
+        if (pid) {
+          const el = document.getElementById(`supply-${pid}`);
+          if (el) {
+            fetch(`${API()}/public/projects/${pid}`)
+              .then(r => r.ok ? r.json() : null)
+              .then(d => {
+                if (!d || !d.supply) { el.textContent = ''; return; }
+                const rem = d.supply.remaining;
+                if (typeof rem === 'number') el.textContent = `Remaining: ${rem} credits`;
+              })
+              .catch(()=>{ if (el) el.textContent=''; });
+          }
+          // Wire details button
+          setTimeout(() => {
+            const btn = document.querySelector(`.leaflet-popup [data-detail-id="${pid}"]`);
+            if (btn) {
+              btn.onclick = (ev) => { ev.preventDefault(); openPanel(pid); };
+            }
+          }, 0);
+        }
       });
 
       function markerFor(feature){
@@ -114,7 +163,11 @@
           ${img}
           <div>Area: ${p.area_hectares ?? '—'} ha</div>
           <div>${chain}</div>
-          <a href="${API()}/public/projects/${p.id}" target="_blank" rel="noopener">JSON</a>
+          <div id="supply-${p.id}" style="font-size:12px;color:#4b5563;margin-top:4px;">Checking supply…</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
+            <button class="btn-link" data-detail-id="${p.id}">Details</button>
+            <a class="btn-link" href="${API()}/public/projects/${p.id}" target="_blank" rel="noopener">JSON</a>
+          </div>
         </div>`;
         m.bindPopup(html);
         return m;
@@ -194,6 +247,17 @@
       document.getElementById('reset').onclick = () => {
         map.fitBounds(indiaBounds);
       };
+      // Quick status chips
+      document.querySelectorAll('.chip[data-chip-status]').forEach(btn => {
+        btn.onclick = () => {
+          const val = btn.getAttribute('data-chip-status') || '';
+          const sel = document.getElementById('status');
+          sel.value = val;
+          document.querySelectorAll('.chip[data-chip-status]').forEach(b=>b.classList.toggle('active', b===btn));
+          const inView = document.getElementById('inView').checked;
+          loadData({ fit: !inView, source: 'chip' });
+        };
+      });
       // Debounce helper
       let timer = null;
       function debounce(fn, wait=250){
@@ -204,6 +268,36 @@
         if (document.getElementById('inView').checked) debounce(() => loadData({ fit:false, source:'move' }), 350);
       });
       loadData({ fit:true, source:'init' });
+
+      // Panel logic
+      const panel = document.getElementById('panel');
+      const pTitle = document.getElementById('p-title');
+      const pBody = document.getElementById('p-body');
+      const pClose = document.getElementById('p-close');
+      if (pClose) pClose.onclick = () => { panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); };
+      async function openPanel(id){
+        try {
+          const r = await fetch(`${API()}/public/projects/${id}`);
+          if(!r.ok) return;
+          const d = await r.json();
+          pTitle.textContent = d.name || 'Details';
+          const pill = `<span class="status-pill pill-${d.status}">${d.status}</span>`;
+          const imgs = (d.images||[]).slice(0,4).map(u=>`<img src="${u}" style="width:100%;height:auto;border-radius:8px;"/>` ).join('');
+          pBody.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div>
+                <div style="font-size:13px;color:#6b7280;">${d.location_text||''}</div>
+                <div style="font-size:13px;color:#6b7280;">Area: ${d.area_hectares ?? '—'} ha</div>
+              </div>
+              ${pill}
+            </div>
+            <div style="margin-top:8px;font-size:13px;color:#374151;">Remaining: <strong>${d.supply?.remaining ?? '—'}</strong> · Minted: <strong>${d.supply?.minted ?? '—'}</strong></div>
+            <div class="thumbs">${imgs || '<div style="grid-column:1/-1;color:#6b7280;">No images yet</div>'}</div>
+          `;
+          panel.classList.add('open');
+          panel.setAttribute('aria-hidden','false');
+        } catch(e) { /* ignore */ }
+      }
     })();
   </script>
 </body>

@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.permissions import AllowAny
 from .models import Project, ProjectUpdate
+from django.db.models import Sum
 
 
 def project_to_feature(p: Project):
@@ -85,6 +86,8 @@ class PublicProjectDetail(APIView):
             return Response({"detail": "Not found"}, status=404)
         images = list(ProjectUpdate.objects.filter(project=p).order_by('-created_at').values_list('image', flat=True)[:5])
         latest_updates = list(ProjectUpdate.objects.filter(project=p).order_by('-created_at').values('notes', 'image', 'created_at')[:3])
+        purchased = p.purchases.filter(status='Completed').aggregate(s=Sum('credits'))['s'] or 0
+        remaining = max(0, int(p.total_credits_minted or 0) - int(purchased))
         data = {
             "id": p.id,
             "name": p.name,
@@ -103,6 +106,11 @@ class PublicProjectDetail(APIView):
                 "tx_register": None,
                 "tx_approve": None,
             },
+            "supply": {
+                "remaining": remaining,
+                "purchased": int(purchased),
+                "minted": int(p.total_credits_minted or 0)
+            }
         }
         resp = Response(data)
         resp['ETag'] = hashlib.md5(f"detail:{p.id}:{p.updated_at.isoformat()}".encode()).hexdigest()

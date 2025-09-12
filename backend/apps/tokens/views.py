@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from apps.projects.models import Project
 from apps.accounts.permissions import IsAdmin, IsBuyer
 from .service import mint, burn
+from django.db.models import Sum
 from .models import Purchase
 
 
@@ -30,6 +31,11 @@ class BuyerPurchaseView(APIView):
         if credits <= 0:
             return Response({'detail': 'credits must be > 0'}, status=400)
         project = get_object_or_404(Project, pk=pk)
+        # Enforce simple supply cap: available = minted(net) - completed purchases
+        purchased = project.purchases.filter(status='Completed').aggregate(s=Sum('credits'))['s'] or 0
+        available = max(0, (project.total_credits_minted or 0) - purchased)
+        if credits > available:
+            return Response({'detail': f'Not enough supply. Available: {available}', 'available': available}, status=409)
         # Simulate transfer/mint to buyer account later; for now, just record purchase
         p = Purchase.objects.create(buyer=request.user, project=project, credits=credits, price_per_credit=price or 0)
         return Response({'ok': True, 'purchase_id': p.id})
