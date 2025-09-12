@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 from apps.projects.models import Project
-from apps.accounts.permissions import IsAdmin
+from apps.accounts.permissions import IsAdmin, IsBuyer
 from .service import mint, burn
 from .models import Purchase
 
@@ -21,7 +21,7 @@ class AdminMintView(APIView):
 
 
 class BuyerPurchaseView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsBuyer]
 
     def post(self, request, pk: int):
         # Require buyer role? For now, any authenticated can purchase
@@ -36,7 +36,7 @@ class BuyerPurchaseView(APIView):
 
 
 class BuyerBurnView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsBuyer]
 
     def post(self, request, pk: int):
         credits = int(request.data.get('credits', 0))

@@ -74,6 +74,9 @@ Changelog (AI updates):
   - Added a fade-in animation to all view transitions in `router/index.js`.
   - Next: Further UI refinements, potentially adding charts or more visual elements.
 
+- [2025-09-12] Step 5.1 admin UX tweak:
+  - Added a Quick Approve button in Admin project detail that sets status=Approved and auto-mints 100 credits (dry-run) to showcase the full flow during demos.
+
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 
 Objective for this Phase: Build a functional web application that manages users, projects, and data uploads. This is the "off-chain" foundation before we integrate any blockchain components.

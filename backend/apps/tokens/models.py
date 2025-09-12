@@ -11,7 +11,7 @@ class TokenLedger(models.Model):
     )
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='token_ledger')
     action = models.CharField(max_length=10, choices=ACTION_CHOICES)
-    amount = models.BigIntegerField(help_text='Token units in lowest denomination (wei-like)')
+    amount = models.DecimalField(max_digits=78, decimal_places=0, help_text='Token units in lowest denomination (wei-like)')
     tx_hash = models.CharField(max_length=100, blank=True, default='')
     meta = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

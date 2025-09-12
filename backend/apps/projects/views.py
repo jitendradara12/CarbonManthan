@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import Project, ProjectUpdate
 from .serializers import ProjectSerializer, ProjectUpdateSerializer, AdminProjectStatusSerializer
-from ..accounts.permissions import IsNGO, IsAdmin, IsOwnerOrReadOnly
+from apps.accounts.permissions import IsNGO, IsAdmin, IsOwnerOrReadOnly
 
 
 class NGOProjectListCreateView(generics.ListCreateAPIView):

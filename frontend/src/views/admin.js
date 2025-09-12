@@ -87,6 +87,9 @@ export const AdminDetailView = (project, updates) => h(`
       <div class="col" style="flex:0 0 auto;">
         <button data-admin-mint="${project.id}">Mint</button>
       </div>
+      <div class="col" style="flex:0 0 auto;">
+        <button data-admin-quickapprove="${project.id}" ${project.status === 'Approved' ? 'disabled' : ''}>Quick Approve</button>
+      </div>
       <div class="col" style="flex:1;">
         <div>Total minted (db): <strong>${project.total_credits_minted ?? 0}</strong></div>
       </div>
