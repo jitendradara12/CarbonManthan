@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from decimal import Decimal
+from typing import Optional  # added for Python 3.9-compatible type hints
 from django.conf import settings
 from .models import TokenLedger
 from apps.projects.models import Project
@@ -34,7 +35,7 @@ def _to_units(credits: int) -> Decimal:
     return Decimal(credits) * (10 ** settings.TOKEN_DECIMALS)
 
 
-def mint(project: Project, credits: int, meta: dict | None = None) -> TxResult:
+def mint(project: Project, credits: int, meta: Optional[dict] = None) -> TxResult:
     amount = _to_units(credits)
     if settings.TOKEN_DRY_RUN:
         rec = TokenLedger.objects.create(project=project, action='MINT', amount=amount, tx_hash='dryrun', meta=meta or {})
@@ -46,7 +47,7 @@ def mint(project: Project, credits: int, meta: dict | None = None) -> TxResult:
     return TxResult(tx_hash=rec.tx_hash, simulated=False)
 
 
-def burn(project: Project, credits: int, meta: dict | None = None) -> TxResult:
+def burn(project: Project, credits: int, meta: Optional[dict] = None) -> TxResult:
     amount = _to_units(credits)
     if settings.TOKEN_DRY_RUN:
         rec = TokenLedger.objects.create(project=project, action='BURN', amount=amount, tx_hash='dryrun', meta=meta or {})
