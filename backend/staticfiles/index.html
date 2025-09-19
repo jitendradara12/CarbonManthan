@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CarbonManthan</title>
+  <link rel="stylesheet" href="/frontend/styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <!-- Leaflet (must load before app) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    window.API_BASE = '/api';
+  </script>
+  <!-- Modular frontend build (Phase 1) -->
+  <script type="module" defer src="/frontend/src/main.js"></script>
+  <style>body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,sans-serif;margin:0}</style>
+  <link rel="icon" href="data:,">
+  </head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <h1>Blue Carbon Registry</h1>
+      <div class="topbar-rhs">
+        <nav id="nav"></nav>
+        <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">🌙</button>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <section id="flash" class="flash" hidden role="alert"></section>
+    <section id="view" class="view-container"></section>
+  </main>
+  <footer class="footer"><div class="container">Phase 1 demo UI – Modular</div></footer>
+</body>
+</html>

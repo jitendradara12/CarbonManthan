@@ -22,7 +22,13 @@ async function route(){
   v.innerHTML = Loader();
   const hash = location.hash || '#/';
   if(!authState.user && !['#/login','#/register'].includes(hash)) {
-    location.hash = '#/login'; return;
+    // Ensure login renders even before hashchange listener is attached
+    location.hash = '#/login';
+    v.innerHTML = LoginView();
+    const focusEl = v.querySelector('input[name=username]');
+    if (focusEl) focusEl.focus();
+    bind(v);
+    return;
   }
   try {
     let focusEl = null;
@@ -104,6 +110,27 @@ async function route(){
     } else if (hash === '#/' && authState.user?.role === 'BUYER') {
       v.innerHTML = BuyerDashboardView();
       focusEl = v.querySelector('h2');
+        // Populate project dropdown for buyers
+        try {
+          const sel = v.querySelector('#buyerProject');
+          const info = v.querySelector('#buyerProjectInfo');
+          if (sel) {
+            const qs = new URLSearchParams({ status: 'Approved' });
+            const resp = await fetch(`${API_BASE}/public/projects.geojson?${qs.toString()}`);
+            const data = resp.ok ? await resp.json() : { features: [] };
+            const options = (data.features||[]).map(f => {
+              const p = f.properties; const name = p.name || `Project ${p.id}`; const loc = p.location_text ? ` – ${p.location_text}` : '';
+              return { id: p.id, label: `#${p.id} · ${name}${loc}`, remaining: p.supply_remaining ?? null };
+            });
+            sel.innerHTML = `<option value="">Select a project…</option>` + options.map(o=>`<option value="${o.id}">${o.label}</option>`).join('');
+            const updateInfo = () => {
+              const id = sel.value; const found = options.find(o=>String(o.id)===String(id));
+              if (found && info) info.textContent = (typeof found.remaining === 'number') ? `Remaining: ${found.remaining} credits` : '';
+              else if (info) info.textContent = '';
+            };
+            sel.onchange = updateInfo; updateInfo();
+          }
+        } catch (e) { /* ignore UI fetch errors */ }
     } else if(hash === '#/login'){
       v.innerHTML = LoginView();
       focusEl = v.querySelector('input[name=username]');
@@ -139,6 +166,17 @@ async function route(){
       }
     } catch (e) {
       // ignore render error
+    }
+  }
+
+  // Fallback: if unauthenticated and nothing rendered, force-login view
+  if (!authState.user) {
+    const content = (v.innerHTML || '').replace(/\s+/g, '');
+    if (!content || content === Loader().replace(/\s+/g, '')) {
+      v.innerHTML = LoginView();
+      const focusEl = v.querySelector('input[name=username]');
+      if (focusEl) focusEl.focus();
+      bind(v);
     }
   }
 }
@@ -301,4 +339,8 @@ function bind(v){
   });
 }
 
-export async function initApp(){ await hydrate(); await route(); window.addEventListener('hashchange', route); }
+export async function initApp(){
+  window.addEventListener('hashchange', route);
+  await hydrate();
+  await route();
+}
