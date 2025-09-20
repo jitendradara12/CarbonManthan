@@ -17,12 +17,19 @@
   <link rel="icon" href="data:,">
   </head>
 <body>
-  <header class="topbar">
-    <div class="container">
-      <h1>Blue Carbon Registry</h1>
+  <header class="topbar" role="banner">
+    <div class="container topbar-inner">
+      <div class="brand-wrapper">
+        <a href="#/" id="app-home-link" class="brand" aria-label="Go to dashboard home">Blue Carbon Registry</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-controls="nav" aria-expanded="false" aria-label="Menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
       <div class="topbar-rhs">
-        <nav id="nav"></nav>
-        <button id="theme-toggle" class="theme-toggle" title="Toggle dark mode">🌙</button>
+        <nav id="nav" class="nav" aria-label="Primary" role="navigation"></nav>
+        <button id="theme-toggle" data-theme-toggle class="theme-toggle theme-toggle-desktop" title="Toggle dark mode" aria-label="Toggle theme">🌙</button>
       </div>
     </div>
   </header>

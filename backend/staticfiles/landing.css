@@ -469,19 +469,29 @@ body.dark-theme .impact-section {
     transform-origin: 1px;
 }
 
+/* Mobile menu expanded state */
 .nav-active .nav-links {
-    position: fixed;
-    left: 0;
-    top: 70px;
-    height: calc(100vh - 70px);
-    width: 100%;
-    background: var(--bg-color, white);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 3rem;
+        position: fixed;
+        inset: 70px 0 0 0;
+        height: calc(100vh - 70px);
+        width: 100%;
+        background: var(--bg-color, #fff);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 2rem;
+        padding-top: 2.5rem;
+        animation: fadeIn .25s ease;
 }
+
+@media (prefers-reduced-motion: reduce) {
+    .nav-active .nav-links { animation: none; }
+}
+
+/* Improve tap targets */
+.nav-links a { padding:.75rem 1rem; }
+
 
 .nav-active .nav-links a {
     font-size: 1.5rem;

@@ -7,6 +7,7 @@ export const AdminListView = (projects) => {
   <div class="card">
     <h2>All Projects for Review</h2>
     ${hasProjects ? `
+    <div class="admin-table-wrapper">
     <table class="admin-table">
       <thead>
         <tr>
@@ -30,6 +31,7 @@ export const AdminListView = (projects) => {
           </tr>`).join('')}
       </tbody>
     </table>
+    </div>
     <div class="pagination">
       <button data-page-url="${projects.previous}" ${!projects.previous ? 'disabled' : ''}>Previous</button>
       <span>Page ${Math.floor((projects.results[0]?.id - 1) / (projects.results.length || 1)) + 1} of ${Math.ceil(projects.count / (projects.results.length || 1))}</span>
