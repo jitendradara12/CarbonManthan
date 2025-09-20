@@ -35,28 +35,32 @@ body {
 /* --- Header & Navigation --- */
 .sticky-header {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: var(--header-bg, rgba(255, 255, 255, 0.9));
-    backdrop-filter: blur(10px);
+    top: 18px;
+    left: 50%; /* center horizontally */
+    transform: translateX(-50%);
+    width: 79%;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(6px);
+    border-radius: 37px;
     z-index: 1000;
     border-bottom: 1px solid var(--border-color );
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, width 0.3s, padding 0.3s;
+    box-sizing: border-box;
+    padding: 0 .65rem; /* a little horizontal breathing room so content doesn't touch edges */
 }
 
 .sticky-header nav {
     display: flex;
     justify-content: space-between;
-
     align-items: center;
     height: 70px;
+    gap: 1rem;
 }
 
 .logo {
     font-weight: 700;
     font-size: 1.5rem;
-    color: var(--logo-color, #005f73);
+    color: var(--logo-color, #58a6ff);
     text-decoration: none;
 }
 
@@ -294,6 +298,29 @@ body.dark-theme .impact-section {
 
     .intro-text h2, .ecosystems-section h2, .impact-section h2, .cta-section h2 {
         font-size: 2rem;
+    }
+}
+
+/* Ultra-mobile / narrow phones: show only logo */
+@media (max-width: 680px) {
+    .sticky-header {
+        width: 94%;
+        top: 12px;
+        padding: .5rem .85rem;
+        border-radius: 28px;
+    }
+    .sticky-header nav {
+        justify-content: center;
+        height: 56px;
+        gap: 0;
+    }
+    .logo {
+        text-align: center;
+        width: auto;
+        flex: 0 1 auto;
+    }
+    .nav-actions { /* hide all nav action buttons on mobile */
+        display: none !important;
     }
 }
 
