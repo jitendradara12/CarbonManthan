@@ -4,8 +4,8 @@ export const BuyerDashboardView = () => h(`
   <div class="card">
     <h2>Buy & Burn Credits (MVP)</h2>
     <p class="muted">Choose a project to purchase or burn credits.</p>
-    <form id="buyerActions">
-      <div class="row" style="gap:.75rem;">
+    <form id="buyerActions" class="buyer-form">
+      <div class="row buyer-form-row" style="gap:.75rem;">
         <div class="col" style="min-width:260px;">
           <label>Project
             <select name="projectId" id="buyerProject" required>

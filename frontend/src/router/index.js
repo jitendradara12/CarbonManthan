@@ -11,7 +11,26 @@ function renderNav(){
   if(!authState.user){
     nav.innerHTML = `<a class="navlink" href="#/login">Login</a><a class="navlink" href="#/register">Register</a>`;
   } else {
-    nav.innerHTML = `<span>Welcome, <strong>${authState.user.username}</strong> (${authState.user.role})</span> <a class="navlink logout-btn" href="#/logout">Logout</a>`;
+    nav.innerHTML = `<span class="nav-user">Welcome, <strong>${authState.user.username}</strong> (${authState.user.role})</span> <a class="navlink logout-btn" href="#/logout">Logout</a>`;
+  }
+  // Add a mobile-only theme toggle at end (hidden on desktop via CSS)
+  if (!nav.querySelector('.theme-toggle-mobile')) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'theme-toggle theme-toggle-mobile';
+    btn.setAttribute('aria-label','Toggle theme');
+    btn.setAttribute('data-theme-toggle','');
+    btn.textContent = document.documentElement.dataset.theme === 'dark' ? '☀️' : '🌙';
+    nav.appendChild(btn);
+  }
+  // Safety bind if main.js initHamburger ran before DOM settled or was replaced
+  const navToggle = document.getElementById('nav-toggle');
+  if (navToggle && !navToggle.dataset.bound) {
+    navToggle.dataset.bound = '1';
+    navToggle.addEventListener('click', () => {
+      const open = document.body.classList.toggle('nav-open');
+      navToggle.setAttribute('aria-expanded', String(open));
+    });
   }
 }
 
@@ -159,9 +178,9 @@ async function route(){
           pane.innerHTML = '<h3>My Purchases</h3><div class="empty-state"><p>No purchases yet.</p></div>';
         } else {
           pane.innerHTML = '<h3>My Purchases</h3>' +
-            '<table class="admin-table"><thead><tr><th>ID</th><th>Project</th><th>Credits</th><th>Price/credit</th><th>Date</th></tr></thead><tbody>' +
+            '<div class="table-scroll--buyer"><table class="admin-table"><thead><tr><th>ID</th><th>Project</th><th>Credits</th><th>Price/credit</th><th>Date</th></tr></thead><tbody>' +
             data.results.map(p=>`<tr><td>${p.id}</td><td>${p.project}</td><td>${p.credits}</td><td>${p.price_per_credit}</td><td>${new Date(p.created_at).toLocaleString()}</td></tr>`).join('') +
-            '</tbody></table>';
+            '</tbody></table></div>';
         }
       }
     } catch (e) {
