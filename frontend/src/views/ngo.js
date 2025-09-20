@@ -2,8 +2,8 @@ import { h } from '../components/ui.js';
 import { Icon } from '../components/icons.js';
 
 export const NGOListView = (projects) => h(`
-  <div class="row">
-    <div class="col" style="flex: 3;">
+  <div class="row ngo-dashboard">
+    <div class="col ngo-primary" style="flex:3;min-width:300px;">
       <div class="card">
         <h2>Your Projects</h2>
         ${(projects.results && projects.results.length > 0) ? `
@@ -25,7 +25,7 @@ export const NGOListView = (projects) => h(`
         `}
       </div>
     </div>
-    <div class="col" style="flex: 1;">
+    <div class="col ngo-secondary" style="flex:1;min-width:280px;">
       <div class="card">
         <h2>Create Project</h2>
         <form id="projForm">
