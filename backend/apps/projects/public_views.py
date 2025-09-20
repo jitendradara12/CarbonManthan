@@ -8,10 +8,11 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.permissions import AllowAny
 from .models import Project, ProjectUpdate
-from django.db.models import Sum
+from django.db.models import Sum, Max
+from apps.tokens.models import Purchase
 
 
-def project_to_feature(p: Project):
+def project_to_feature(p: Project, purchased: int = 0):
     lon = float(p.longitude or p.location_lon)
     lat = float(p.latitude or p.location_lat)
     # cover image fallback to latest update image
@@ -24,6 +25,7 @@ def project_to_feature(p: Project):
             .first()
         )
         cover = latest_img or ""
+    remaining = max(0, int(p.total_credits_minted or 0) - int(purchased or 0))
     props = {
         "id": p.id,
         "name": p.name,
@@ -33,6 +35,7 @@ def project_to_feature(p: Project):
         "cover_image_url": cover,
         "onchain_project_id": p.onchain_project_id,
         "total_credits_minted": int(p.total_credits_minted or 0),
+        "supply_remaining": int(remaining),
         "updated_at": p.updated_at.astimezone(dt_timezone.utc).isoformat().replace('+00:00', 'Z'),
     }
     return {
@@ -62,15 +65,29 @@ class PublicProjectsGeoJSON(APIView):
                 qs = qs.filter(longitude__gte=minx, longitude__lte=maxx, latitude__gte=miny, latitude__lte=maxy)
             except Exception:
                 pass
-        features = [project_to_feature(p) for p in qs if (p.latitude or p.location_lat) and (p.longitude or p.location_lon)]
+        # Pre-compute purchased totals and latest purchase times in one query
+        ids = list(qs.values_list('id', flat=True))
+        purchased_rows = Purchase.objects.filter(project_id__in=ids, status='Completed').values('project_id').annotate(
+            total=Sum('credits'), latest=Max('created_at')
+        )
+        purchased_map = {row['project_id']: (row['total'] or 0) for row in purchased_rows}
+        latest_purchase_map = {row['project_id']: row['latest'] for row in purchased_rows if row.get('latest')}
+
+        features = [project_to_feature(p, purchased_map.get(p.id, 0)) for p in qs if (p.latitude or p.location_lat) and (p.longitude or p.location_lon)]
         payload = {"type": "FeatureCollection", "features": features}
-        # lightweight ETag/Last-Modified
-        latest = qs.order_by('-updated_at').values_list('updated_at', flat=True).first()
-        etag_src = f"{len(features)}:{str(latest)}".encode()
+        # lightweight ETag/Last-Modified also reflecting latest purchase
+        latest_project = qs.order_by('-updated_at').values_list('updated_at', flat=True).first()
+        latest_purchase = None
+        if latest_purchase_map:
+            latest_purchase = max(latest_purchase_map.values())
+        latest_any = latest_project
+        if latest_purchase and (not latest_any or latest_purchase > latest_any):
+            latest_any = latest_purchase
+        etag_src = f"{len(features)}:{str(latest_any)}".encode()
         resp = Response(payload, content_type='application/geo+json')
         resp['ETag'] = hashlib.md5(etag_src).hexdigest()
-        if latest:
-            resp['Last-Modified'] = latest.astimezone(dt_timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
+        if latest_any:
+            resp['Last-Modified'] = latest_any.astimezone(dt_timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
         return resp
 
 

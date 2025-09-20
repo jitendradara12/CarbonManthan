@@ -88,6 +88,10 @@ Changelog (AI updates):
   - Buyer purchases now enforce a simple supply cap (returns 409 with available value).
   - Seed command enhanced: adds cover images, varied statuses, and some minted credits for Approved to demo supply.
   - Explorer side panel: Added a right-hand details panel with images and supply info; popup includes a Details button to open it.
+  - GeoJSON properties now include `supply_remaining`; Explorer popups show it instantly without an extra request.
+
+- [2025-09-12] Buyer UX improvement:
+  - Replaced raw Project ID input with a dropdown of Approved projects populated from the public GeoJSON, showing Remaining supply next to the selector.
 
 ## Project: Blockchain-Based Blue Carbon Registry (Code: CarbonManthan)
 

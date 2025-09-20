@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarbonManthan - The Power of Blue Carbon</title>
+    <link rel="stylesheet" href="/frontend/landing.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="sticky-header">
+        <nav class="container">
+            <a href="/" class="logo">CarbonManthan</a>
+            <!-- <ul class="nav-links">
+                <li><a href="#" class="active">Home</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Our Projects</a></li>
+                <li><a href="#">News</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul> -->
+            <div class="nav-actions">
+                <a href="/app/#/login" class="btn btn-outline">Login</a>
+                <a href="/app/#/register" class="btn btn-primary">Register</a>
+                <button id="theme-toggle" class="theme-toggle-btn" title="Toggle theme"></button>
+            </div>
+            <button class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="video-background">
+                <!-- Using a placeholder image for now -->
+                <img src="https://images.unsplash.com/photo-1504439249990-d671b5503a42?q=80&w=2070&auto=format&fit=crop" alt="Underwater seagrass bed">
+            </div>
+            <div class="hero-content">
+                <h1>Our Ocean, Our Future: The Power of Blue Carbon</h1>
+                <p>Discover how coastal ecosystems are our greatest allies in the fight against climate change.</p>
+                <a href="#about" class="btn btn-primary">Explore Our Mission</a>
+            </div>
+        </section>
+
+            <section class="map-preview-section" style="padding:40px 0;">
+                <div class="container">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                        <h2 style="margin:0;">Explore Projects Across India</h2>
+                        <div style="display:flex;gap:10px;align-items:center;">
+                            <a href="/explorer" class="btn btn-outline">Open Explorer</a>
+                            <a href="https://mumbai.polygonscan.com/" target="_blank" rel="noopener" class="btn btn-primary">View Blockchain Transactions</a>
+                        </div>
+                    </div>
+                    <div id="landing-map" style="height:380px;margin-top:16px;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;"></div>
+                    <div style="margin-top:10px;font-size:14px;color:#374151;display:flex;gap:16px;">
+                        <span>Approved: <strong id="lm-approved">0</strong></span>
+                        <span>Pending: <strong id="lm-pending">0</strong></span>
+                        <span>Rejected: <strong id="lm-rejected">0</strong></span>
+                        <span>Total: <strong id="lm-total">0</strong></span>
+                    </div>
+                </div>
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+                <script>
+                    (function(){
+                        const mapDiv = document.getElementById('landing-map');
+                        if(!mapDiv || !window.L) return;
+                        const map = L.map(mapDiv, { zoomControl: true, scrollWheelZoom: false });
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap'}).addTo(map);
+                        const bounds = [[6.0, 68.0], [37.5, 97.5]];
+                        map.fitBounds(bounds);
+                        fetch('/api/public/projects.geojson')
+                            .then(r => r.ok ? r.json() : { features: [] })
+                            .then(data => {
+                                const cnt = { Approved:0, Pending:0, Rejected:0 };
+                                (data.features||[]).forEach(f => {
+                                    const st = f.properties?.status;
+                                    if (cnt[st] != null) cnt[st]++;
+                                    const [lon, lat] = f.geometry.coordinates;
+                                    const color = st==='Approved'?'#1B9E77':(st==='Pending'?'#E6AB02':'#D95F02');
+                                    const icon = L.divIcon({ className:'', html:`<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2)"></div>`, iconSize:[16,16] });
+                                    L.marker([lat, lon], { icon }).addTo(map);
+                                });
+                                document.getElementById('lm-approved').textContent = cnt.Approved;
+                                document.getElementById('lm-pending').textContent = cnt.Pending;
+                                document.getElementById('lm-rejected').textContent = cnt.Rejected;
+                                document.getElementById('lm-total').textContent = (data.features||[]).length;
+                            })
+                            .catch(()=>{});
+                    })();
+                </script>
+            </section>
+
+        <section id="about" class="intro-section">
+            <div class="container">
+                <div class="two-column">
+                    <div class="intro-text">
+                        <h2>The Unseen Hero of Our Planet</h2>
+                        <p>Blue Carbon is the carbon stored in coastal and marine ecosystems. Unlike their terrestrial counterparts, these powerful environments can capture and store vast amounts of carbon for thousands of years, making them a critical tool in mitigating climate change.</p>
+                    </div>
+                    <div class="intro-image">
+                        <img src="https://images.unsplash.com/photo-1590622579939-a45941ea4c3d?q=80&w=1974&auto=format&fit=crop" alt="Dense mangrove forest root system">
+                    </div>
+                </div>
+                <div class="icon-bar">
+                    <div class="icon-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 12H12c-2.2 0-4-1.8-4-4v-2c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2c0 2.2-1.8 4-4 4z"/><path d="M12 12h9.5"/><path d="M12 12C6.5 12 2 7.5 2 2"/><path d="M12 12c5.5 0 10 4.5 10 10"/></svg>
+                        <h3>Sequesters Carbon</h3>
+                    </div>
+                    <div class="icon-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <h3>Protects Coastlines</h3>
+                    </div>
+                    <div class="icon-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 16.5C15 18 13.4 19 12 19c-1.4 0-3-.9-4.5-2.5s-2.5-3-2.5-4.5c0-1.4.9-3 2.5-4.5S10.6 5 12 5c1.4 0 3 .9 4.5 2.5"/><path d="M22 12c-2.5 0-5-2.5-5-5s2.5-5 5-5"/><path d="M2 12c2.5 0 5-2.5 5-5s-2.5-5-5-5"/></svg>
+                        <h3>Boosts Biodiversity</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="ecosystems-section">
+            <div class="container">
+                <h2>Our Vital Blue Carbon Ecosystems</h2>
+                <div class="ecosystem-cards">
+                    <div class="card">
+                        <img src="https://images.unsplash.com/photo-1608303599152-399d86264369?q=80&w=1964&auto=format&fit=crop" alt="Mangrove Forest">
+                        <div class="card-content">
+                            <h3>Mangrove Forests</h3>
+                            <p>These coastal powerhouses are nurseries for marine life and champions of carbon storage.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://images.unsplash.com/photo-1599409636153-93742933a519?q=80&w=2070&auto=format&fit=crop" alt="Seagrass Meadow">
+                        <div class="card-content">
+                            <h3>Seagrass Meadows</h3>
+                            <p>Efficiently trapping carbon and sediment, these underwater fields are crucial for ocean health.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <img src="https://images.unsplash.com/photo-1622122259059-3349018156e4?q=80&w=2070&auto=format&fit=crop" alt="Tidal Salt Marsh">
+                        <div class="card-content">
+                            <h3>Tidal Salt Marshes</h3>
+                            <p>Vital for carbon burial and coastal resilience, these wetlands are unsung climate heroes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="impact-section">
+            <div class="container">
+                <h2>Our Impact in Numbers</h2>
+                <div class="stats-container">
+                    <div class="stat">
+                        <span class="stat-number" data-target="500000">0</span>+
+                        <p>Tonnes CO₂ Sequestered</p>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="1200">0</span>+
+                        <p>Hectares of Coastline Restored</p>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="35">0</span>+
+                        <p>Communities Empowered</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Join the Blue Revolution</h2>
+                <p>Create an account to track project progress, access exclusive resources, and become part of a global community dedicated to preserving our oceans.</p>
+                <a href="/app/#/register" class="btn btn-primary">Register for Free</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>CarbonManthan</h3>
+                    <p>A pioneering initiative to leverage blue carbon ecosystems for a sustainable future.</p>
+                </div>
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Projects</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Follow Us</h4>
+                    <div class="social-icons">
+                        <a href="#">Twitter</a>
+                        <a href="#">Instagram</a>
+                        <a href="#">LinkedIn</a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h4>Contact Info</h4>
+                    <p>contact@carbonmanthan.org</p>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 CarbonManthan. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/frontend/landing.js"></script>
+</body>
+</html>
+
