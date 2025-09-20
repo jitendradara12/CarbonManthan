@@ -1,18 +1,40 @@
 import { initApp } from './router/index.js';
 
 function initTheme() {
-  const toggle = document.getElementById('theme-toggle');
   const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   document.documentElement.dataset.theme = savedTheme;
-  toggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-  toggle.onclick = () => {
-    const current = document.documentElement.dataset.theme;
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
-    localStorage.setItem('theme', next);
-    toggle.textContent = next === 'dark' ? '☀️' : '🌙';
+  const sync = () => {
+    document.querySelectorAll('[data-theme-toggle]').forEach(b => { b.textContent = document.documentElement.dataset.theme === 'dark' ? '☀️' : '🌙'; });
   };
+  sync();
+  document.addEventListener('click', (e) => {
+    const t = e.target;
+    if (t && t.matches('[data-theme-toggle]')) {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      localStorage.setItem('theme', next);
+      sync();
+    }
+  });
 }
 
 initTheme();
+// Hamburger logic (robust)
+function initHamburger(){
+  const navToggle = document.getElementById('nav-toggle');
+  if(!navToggle) return;
+  if(navToggle.dataset.bound) return; // avoid rebinding
+  navToggle.dataset.bound = '1';
+  navToggle.addEventListener('click', () => {
+    const open = document.body.classList.toggle('nav-open');
+    navToggle.setAttribute('aria-expanded', String(open));
+  });
+  window.addEventListener('hashchange', () => {
+    if(document.body.classList.contains('nav-open')){
+      document.body.classList.remove('nav-open');
+      navToggle.setAttribute('aria-expanded','false');
+    }
+  });
+}
+initHamburger();
 initApp();

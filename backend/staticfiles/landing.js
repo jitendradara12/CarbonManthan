@@ -9,15 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Smooth scroll for hero button
-    const exploreBtn = document.querySelector('.hero-content .btn');
-    if(exploreBtn) {
-        exploreBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            document.querySelector('#about').scrollIntoView({ behavior: 'smooth' });
-        });
-    }
-
+    //removed some lines here
+}
     // Animated counters
     const counters = document.querySelectorAll('.stat-number');
     const speed = 200; // The lower the slower

@@ -11,9 +11,10 @@
 </head>
 <body>
 
-    <header class="sticky-header">
-        <nav class="container">
-            <a href="/" class="logo">CarbonManthan</a>
+    <header class="sticky-header" role="banner">
+        <nav class="container" role="navigation" aria-label="Main">
+            <a href="/" class="logo" aria-label="Go to home" id="landing-home-link">CarbonManthan</a>
+            <!-- i don't want below nav links -->
             <!-- <ul class="nav-links">
                 <li><a href="#" class="active">Home</a></li>
                 <li><a href="#">About Us</a></li>
@@ -26,7 +27,7 @@
                 <a href="/app/#/register" class="btn btn-primary">Register</a>
                 <button id="theme-toggle" class="theme-toggle-btn" title="Toggle theme"></button>
             </div>
-            <button class="hamburger">
+            <button class="hamburger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-menu">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -38,12 +39,13 @@
         <section class="hero">
             <div class="video-background">
                 <!-- Using a placeholder image for now -->
-                <img src="https://images.unsplash.com/photo-1504439249990-d671b5503a42?q=80&w=2070&auto=format&fit=crop" alt="Underwater seagrass bed">
+                <img src="https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg" alt="Underwater seagrass bed">
             </div>
             <div class="hero-content">
                 <h1>Our Ocean, Our Future: The Power of Blue Carbon</h1>
                 <p>Discover how coastal ecosystems are our greatest allies in the fight against climate change.</p>
-                <a href="#about" class="btn btn-primary">Explore Our Mission</a>
+                <a href="/app/#/register" class="btn btn-primary">Get Started</a>
+
             </div>
         </section>
 
@@ -95,8 +97,9 @@
                     })();
                 </script>
             </section>
-
-        <section id="about" class="intro-section">
+        
+        <!-- remove this section "about" i don't want it -->
+        <!-- <section id="about" class="intro-section">
             <div class="container">
                 <div class="two-column">
                     <div class="intro-text">
@@ -104,7 +107,7 @@
                         <p>Blue Carbon is the carbon stored in coastal and marine ecosystems. Unlike their terrestrial counterparts, these powerful environments can capture and store vast amounts of carbon for thousands of years, making them a critical tool in mitigating climate change.</p>
                     </div>
                     <div class="intro-image">
-                        <img src="https://images.unsplash.com/photo-1590622579939-a45941ea4c3d?q=80&w=1974&auto=format&fit=crop" alt="Dense mangrove forest root system">
+                        <img src="https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg" alt="Dense mangrove forest root system">
                     </div>
                 </div>
                 <div class="icon-bar">
@@ -122,9 +125,10 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> -->
+        <!-- remove till here -->
 
-        <section class="ecosystems-section">
+        <section class="ecosystems-section" style="margin-top: 0px; !important">
             <div class="container">
                 <h2>Our Vital Blue Carbon Ecosystems</h2>
                 <div class="ecosystem-cards">
@@ -182,41 +186,6 @@
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-column">
-                    <h3>CarbonManthan</h3>
-                    <p>A pioneering initiative to leverage blue carbon ecosystems for a sustainable future.</p>
-                </div>
-                <div class="footer-column">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Projects</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">FAQ</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h4>Follow Us</h4>
-                    <div class="social-icons">
-                        <a href="#">Twitter</a>
-                        <a href="#">Instagram</a>
-                        <a href="#">LinkedIn</a>
-                    </div>
-                </div>
-                <div class="footer-column">
-                    <h4>Contact Info</h4>
-                    <p>contact@carbonmanthan.org</p>
-                    <p>+1 (555) 123-4567</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2024 CarbonManthan. All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <script src="/frontend/landing.js"></script>
 </body>
