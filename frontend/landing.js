@@ -22,10 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     const impactSection = document.querySelector('.impact-section');
+    let impactStarted = false;
     if (impactSection && counters.length) {
         const observer = new IntersectionObserver((entries, obs) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
+                    impactStarted = true;
                     counters.forEach(animateCounter);
                     obs.disconnect();
                 }
@@ -33,6 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { threshold: 0.5 });
         observer.observe(impactSection);
     }
+    const triggerImpactIfReady = () => {
+        if (impactStarted) {
+            counters.forEach(animateCounter);
+        }
+    };
 
     // Scroll reveal animations
     const sections = document.querySelectorAll('section');
@@ -68,4 +75,30 @@ document.addEventListener('DOMContentLoaded', () => {
             applyTheme(currentTheme);
         });
     }
+
+    // Dynamic impact numbers from public projects API
+    (async () => {
+        try {
+            const resp = await fetch('/api/public/projects.geojson');
+            if (!resp.ok) return; // keep zeros silently
+            const data = await resp.json();
+            const features = Array.isArray(data.features) ? data.features : [];
+            const approved = features.filter(f => f?.properties?.status === 'Approved');
+            // 1 credit = 1 metric ton CO2
+            const totalCO2 = approved.reduce((s, f) => s + (Number(f?.properties?.total_credits_minted) || 0), 0);
+            const totalArea = approved.reduce((s, f) => s + (Number(f?.properties?.area_hectares) || 0), 0);
+            const communities = approved.length; // using count of approved projects as proxy for communities/NGO
+
+            const co2El = document.getElementById('impact-co2');
+            const areaEl = document.getElementById('impact-area');
+            const commEl = document.getElementById('impact-communities');
+            if (co2El) co2El.setAttribute('data-target', String(Math.round(totalCO2)));
+            if (areaEl) areaEl.setAttribute('data-target', String(Math.round(totalArea)));
+            if (commEl) commEl.setAttribute('data-target', String(communities));
+            // If numbers are on screen already, animate now
+            triggerImpactIfReady();
+        } catch (e) {
+            // ignore network errors on public landing
+        }
+    })();
 });
