@@ -302,7 +302,7 @@ body.dark-theme .impact-section {
 }
 
 /* Ultra-mobile / narrow phones: show only logo */
-@media (max-width: 680px) {
+@media (max-width: 780px) {
     .sticky-header {
         width: 94%;
         top: 12px;
