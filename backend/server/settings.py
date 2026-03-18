@@ -91,7 +91,7 @@ if os.environ.get('GAE_APPLICATION', False):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'HOST': '/cloudsql/carbon-490614:asia-south1:carbon-db',
+            'HOST': '/cloudsql/carbon-490614:asia-south2:carbon-db',
             'NAME': 'carbonmanthan',
             'USER': 'postgres',
             'PASSWORD': 'admin123',
