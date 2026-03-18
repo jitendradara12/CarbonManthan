@@ -1,0 +1,12 @@
+runtime: python310
+env: standard
+entrypoint: cd backend && gunicorn -b :$PORT server.wsgi:application
+handlers:
+  - url: /static
+    static_dir: backend/staticfiles/
+  - url: /media
+    static_dir: backend/media/
+  - url: /frontend
+    static_dir: frontend/
+  - url: /.*
+    script: auto
