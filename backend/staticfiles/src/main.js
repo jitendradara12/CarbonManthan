@@ -29,10 +29,20 @@ function initHamburger(){
     const open = document.body.classList.toggle('nav-open');
     navToggle.setAttribute('aria-expanded', String(open));
   });
-  window.addEventListener('hashchange', () => {
+  
+  const closeNav = () => {
     if(document.body.classList.contains('nav-open')){
       document.body.classList.remove('nav-open');
       navToggle.setAttribute('aria-expanded','false');
+    }
+  };
+
+  window.addEventListener('hashchange', closeNav);
+  
+  // Also close nav if clicking any link inside it
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('#nav') && e.target.tagName === 'A') {
+      closeNav();
     }
   });
 }

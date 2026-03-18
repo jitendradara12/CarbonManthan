@@ -44,8 +44,6 @@ async function route(){
     // Ensure login renders even before hashchange listener is attached
     location.hash = '#/login';
     v.innerHTML = LoginView();
-    const focusEl = v.querySelector('input[name=username]');
-    if (focusEl) focusEl.focus();
     bind(v);
     return;
   }
@@ -152,17 +150,16 @@ async function route(){
         } catch (e) { /* ignore UI fetch errors */ }
     } else if(hash === '#/login'){
       v.innerHTML = LoginView();
-      focusEl = v.querySelector('input[name=username]');
     } else if(hash === '#/register'){
       v.innerHTML = RegisterView();
-      focusEl = v.querySelector('input[name=username]');
     } else if(hash === '#/logout'){
       logout(); renderNav(); location.hash = '#/login'; return;
     } else {
       v.innerHTML = `<div class="card"><h2>Page Not Found</h2><p>The requested page does not exist.</p></div>`;
       focusEl = v.querySelector('h2');
     }
-    if(focusEl) focusEl.focus();
+    // Removed focusEl.focus() to prevent mobile keyboard from obscuring the page
+    if(focusEl && focusEl.tagName !== 'INPUT') focusEl.focus();
   } catch(e){
     flash(e.data?.detail || 'Failed to load');
     v.innerHTML = `<div class="card"><h2>Error</h2><p>Could not load page content.</p></div>`;
@@ -193,8 +190,6 @@ async function route(){
     const content = (v.innerHTML || '').replace(/\s+/g, '');
     if (!content || content === Loader().replace(/\s+/g, '')) {
       v.innerHTML = LoginView();
-      const focusEl = v.querySelector('input[name=username]');
-      if (focusEl) focusEl.focus();
       bind(v);
     }
   }

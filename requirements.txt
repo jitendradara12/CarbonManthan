@@ -7,4 +7,5 @@ django-cors-headers
 pytest
 pytest-django
 pytest-cov
-web3>=6.11.0
+web3>=6.11.0gunicorn
+gunicorn
