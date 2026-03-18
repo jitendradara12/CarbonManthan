@@ -1,6 +1,13 @@
 runtime: python310
 env: standard
 entrypoint: cd backend && gunicorn -b :$PORT server.wsgi:application
+
+runtime_config:
+  python_version: 3.10
+
+beta_settings:
+  cloud_sql_instances: "carbon-490614:asia-south1:carbon-db=tcp:5432"
+
 handlers:
   - url: /static
     static_dir: backend/staticfiles/
