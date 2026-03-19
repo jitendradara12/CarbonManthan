@@ -87,12 +87,14 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 # Use Cloud SQL (PostgreSQL) on App Engine, SQLite locally
 import os
-if os.environ.get('GAE_APPLICATION', False):
+# Check for App Engine environment (both GAE_APPLICATION and GAE_ENV are set)
+is_app_engine = os.environ.get('GAE_APPLICATION') or os.environ.get('GAE_ENV') == 'standard'
+
+if is_app_engine:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'HOST': '127.0.0.1',
-            'PORT': '5432',
+            'HOST': '/cloudsql/carbon-490614:asia-south2:carbon-db',
             'NAME': 'carbonmanthan',
             'USER': 'postgres',
             'PASSWORD': 'admin123',
