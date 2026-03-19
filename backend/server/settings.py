@@ -87,10 +87,16 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 # Use Cloud SQL (PostgreSQL) on App Engine, SQLite locally
 import os
-# Check for App Engine environment (both GAE_APPLICATION and GAE_ENV are set)
-is_app_engine = os.environ.get('GAE_APPLICATION') or os.environ.get('GAE_ENV') == 'standard'
 
-if is_app_engine:
+# Check if we're on App Engine by looking for the Cloud SQL socket or env var
+def is_app_engine():
+    if os.environ.get('GAE_APPLICATION'):
+        return True
+    # Also check if the cloudsql socket exists
+    sock_path = '/cloudsql/carbon-490614:asia-south2:carbon-db'
+    return os.path.exists(sock_path)
+
+if is_app_engine():
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
