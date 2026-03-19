@@ -85,13 +85,14 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref settings/#databases
 
-# Use Cloud SQL (PostgreSQL) on App Engine and Cloud Shell, SQLite locally
+# Use Cloud SQL (PostgreSQL) on App Engine, SQLite locally
 import os
-if os.environ.get('GAE_APPLICATION', False) or os.environ.get('CLOUD_RUN_JOB', False):
+if os.environ.get('GAE_APPLICATION', False):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'HOST': '/cloudsql/carbon-490614:asia-south2:carbon-db',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
             'NAME': 'carbonmanthan',
             'USER': 'postgres',
             'PASSWORD': 'admin123',
@@ -100,12 +101,8 @@ if os.environ.get('GAE_APPLICATION', False) or os.environ.get('CLOUD_RUN_JOB', F
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'HOST': '127.0.0.1',
-            'PORT': '9470',
-            'NAME': 'carbonmanthan',
-            'USER': 'postgres',
-            'PASSWORD': 'admin123',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 
