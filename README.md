@@ -1,5 +1,5 @@
-## live at: https://jitendradara12.pythonanywhere.com/landing.html
-(may experience lag due to slow server)
+## live at: https://carbon-490614.el.r.appspot.com/
+(Google cloud)
 
 
 CarbonManthan — Phase 1 (Off-chain Backend)
